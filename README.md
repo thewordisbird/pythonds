@@ -46,4 +46,4 @@ When using a different device the local repository should be updated before movi
 `git pull`
 
 3. If the requierments.txt file has been updated run:  
-`pip install -r requierments.txt
+`pip install -r requierments.txt`
