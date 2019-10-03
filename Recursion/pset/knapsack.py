@@ -41,7 +41,7 @@ def knapsack_rec(W, wt, val, n):
 
 # 4. Add memoization:
 #   a. memoization with temp array in bottom up manner
-def knapsack_a(w, wt, val, n):
+def knapsack_a(W, wt, val, n):
     K = [[0 for x in range(W + 1)] for x in range(n + 1)]
 
     # Build table K from the bottom up
@@ -56,7 +56,36 @@ def knapsack_a(w, wt, val, n):
                 K[row][col] = K[row - 1][col]
     return K[n][W]
 
-#
+#   b. memoization with temp array and recursion
+cache = {}
+def knapsack_b(W, wt, val, n):
+    '''determines maximum combination of items n based on their
+    value val and weight wt to maximize filling a bag with weight capacity W'''
+    # check cache for max value at capacity
+    if W in cache.keys():
+        return cache[W]
+
+    # Base cases:
+    # 1. There are no items
+    # 2. There is no capacity
+    if n == 0 or W == 0:
+        result = 0
+
+    # If weight of the nth item is more than the knapsack of capacity W,
+    # then this item cannot be included in the optimal solution
+    if(wt[n-1] > W):
+        result = knapsack_rec(W, wt, val, n-1)
+    
+    # Return the maximum of two cases:
+    # 1. nth item included
+    # 2. nth item not included
+    else:
+        result = max(val[n-1] + knapsack_rec(W-wt[n-1], wt, val, n-1), knapsack_rec(W, wt, val, n-1))
+
+    # Add max value for capacity to cache and return the result
+    cache[W] = result
+    return result
+
 if __name__ == '__main__':
     W = 20
     val = [3, 4, 8, 8, 10]
@@ -64,3 +93,4 @@ if __name__ == '__main__':
     n = len(val)
     print(knapsack_rec(W, wt, val, n))
     print(knapsack_a(W, wt, val, n))
+    print(knapsack_b(W, wt, val, n))
