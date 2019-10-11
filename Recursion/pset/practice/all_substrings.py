@@ -5,12 +5,12 @@
 # For problems where all end nodes need to be returned or stored, The action must happen in the base case
 # otherwise recurse to the next level with and without the added item
 
-#   0       1       2       3       4       5       6       7
-#               start string ='abc'                 
+#   
+#               start string ='abc'             i=0, len(s) = 3
 #               /                \              Keep or remove 'a'
-#           'abc'                 'bc'
+#           'abc'                 'bc'          
 #         /     \                /    \         Keep or remove 'b'
-#    'abc'       'ac'        'bc'      'c' 
+#    'abc'       'ac'        'bc'      'c'      
 #   /     \     /    \     /     \    /   \     Keep or remove 'c'
 # 'abc'  'ab'  'ac'  'a'  'bc'  'b'  'c'  ''                      
 # 
@@ -30,5 +30,5 @@ def substrings(s, subs=set(), i=0):
     
 
 if __name__ =='__main__':
-    s = 'aaa'
+    s = 'abc'
     print(substrings(s), len(substrings(s)))
