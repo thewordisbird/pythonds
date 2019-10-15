@@ -14,7 +14,7 @@ def sequential_search(items, val):
     return False
 
 
-# This implementation would require a helper function to sum the ascii value of the val word and the item word to see if the value is greater
+# This implementation would require a helper function to compare the ascii value of the val word and the item word to see if the value is greater
 def sequential_search_sorted(items,val):
     '''Only works if list is sorted.'''
     for item in items:
