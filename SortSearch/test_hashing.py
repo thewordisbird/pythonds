@@ -40,3 +40,4 @@ def test_folding_hash(size, item, group, result):
                         ])
 def test_mid_square_hash(size, item, result):
     assert mid_square_hash(size, item) == result
+

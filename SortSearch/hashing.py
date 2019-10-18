@@ -15,6 +15,7 @@ def remainder_hash(size, item):
     '''Remainder method. Divide item by table size and return remainder.'''
     return item % size
 
+
 def folding_hash(size, item, group=2):
     '''Folding method. Divides the item into equal sized pieces (default = 2) and 
         adds together the pieces to get the hash value. This is then processed
@@ -74,13 +75,9 @@ def mid_square_hash(size, item):
             val_mid += digits[i] * (10**p)
             i += 1
     # Return slot
-
-    print(val_mid)
     return val_mid % size
 
 
-def rehash(hash, size):
-    return (hash + 1) % size
 # Helper Function to convert string to a number
 def convert_string(s):
     '''Returns a position weighted sum or unicode values of characters. This
@@ -90,20 +87,16 @@ def convert_string(s):
         string_sum += (ord(c) * (i + 1))
     return string_sum
 
-# Other functions of note
-def load_factor(length, items):
-    '''The amount of the hash table that is occupide.'''
-    return items/length
-
 class Map:
     '''Map abstract data structure. This will use the remainder hashing method'''
     def __init__(self, size):
         self.size = size
         self.slots = [None for x in range(self.size)]
         self.data = [None for x in range(self.size)]
+        self.items = 0
 
     def put(self, key, val):
-        slot = hash_1(self.size, key)
+        slot = remainder_hash(self.size, key)
         if self.slots[slot] is None:
             self.slot[slot] = key
             self.data[slot] = val
@@ -120,7 +113,7 @@ class Map:
                 self.data[next_slot] = data
 
     def get(self, key):
-        slot = hash_1(self.size, key)
+        slot = remainder_hash(self.size, key)
         if self.slots[slot] == key:
             return self.data[slot]
         elif self.slots[slot] == None:
@@ -133,5 +126,17 @@ class Map:
                 else:
                     next_slot = rehash[next_slot, self.size]
             return None
+
+    def remainder_hash(self, key):
+        '''Remainder hash method. Divide item by table size and return remainder.'''
+        return key % self.size
+
+    def rehash(self, hash):
+        '''Increments hash value in case of collision'''
+        return (hash + 1) % self.size
+
+    def load_factor(self):
+        '''The amount of the hash table that is occupide.'''
+        return self.items/self.size
 
 
