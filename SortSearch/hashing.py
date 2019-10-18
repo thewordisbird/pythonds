@@ -98,9 +98,9 @@ class Map:
     def put(self, key, val):
         slot = remainder_hash(self.size, key)
         if self.slots[slot] is None:
-            self.slot[slot] = key
+            self.slots[slot] = key
             self.data[slot] = val
-        elif self.slot[slot] == key:
+        elif self.slots[slot] == key:
             self.data[slot] = val
         else:
             next_slot = rehash(slot, self.size)
