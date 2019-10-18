@@ -57,19 +57,26 @@ def mid_square_hash(size, item):
     print(digits)
     # find mid digits
     len_digits = len(digits)
-    half_digits = len_digits//2
-    mid_range_start = half_digits //2
-    print(len_digits, half_digits, mid_range_start)
+    len_mid = len_digits // 2
+    if len_digits % 2 != 0:        
+        start_mid = (len_digits // 4) + 1
+    else:
+        start_mid = (len_digits // 4)
+    
     # We don't have to reverse this since the digits are stored in reverse order
-    mid_val = 0      
-    i = 0
-    for p in range(half_digits):
-        mid_val += digits[mid_range_start + i] * (10**p)
-        i += 1
+    if len_digits == 1:
+        val_mid = digits[0]
+    # for len_digits == 2 the last digit is used.
+    else:
+        val_mid = 0      
+        i = start_mid
+        for p in range(len_mid):
+            val_mid += digits[i] * (10**p)
+            i += 1
     # Return slot
 
-    print(mid_val)
-    return mid_val % size
+    print(val_mid)
+    return val_mid % size
 
 
 def rehash(hash, size):

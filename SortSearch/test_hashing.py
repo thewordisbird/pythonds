@@ -30,7 +30,13 @@ def test_folding_hash(size, item, group, result):
 
 @pytest.mark.parametrize('size, item, result',
                         [
-                            (7, 192343, 1)
+                            (7, 192343, 6),
+                            (11, 0, 0),
+                            (5, 1, 1),
+                            (7, 2, 4),
+                            (9, 3, 0),
+                            (5, 4, 1),
+                            (5, 11, 2)
                         ])
 def test_mid_square_hash(size, item, result):
     assert mid_square_hash(size, item) == result
