@@ -172,6 +172,9 @@ class Map:
     def __setitem__(self, key, val):
         self.put(key, val)
 
+    def __getitem__(self, key):
+        return self.get(key)
+
     def load_factor(self):
         '''The amount of the hash table that is occupide.'''
         return self.items/self.size

@@ -146,4 +146,6 @@ def test_Map_setitem(map_fixture_empty):
     testMap[7] = 'Sam'
     assert testMap.data[1] == 'Sam'
 
-# test getitem
+def test_Map_getitem(map_fixture_data):
+    testMap = map_fixture_data
+    assert testMap[0] == 'Justin'
