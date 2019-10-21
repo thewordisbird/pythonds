@@ -139,6 +139,11 @@ def test_Map_delitem(map_fixture_data):
     del testMap[0]
     assert testMap.get(0) == None
 
-# test setitem
+def test_Map_setitem(map_fixture_empty):
+    testMap = map_fixture_empty
+    testMap[0] = 'Justin'
+    assert testMap.data[0] == 'Justin'
+    testMap[7] = 'Sam'
+    assert testMap.data[1] == 'Sam'
 
 # test getitem

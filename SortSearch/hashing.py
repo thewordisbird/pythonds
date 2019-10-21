@@ -169,7 +169,8 @@ class Map:
             self.slots[slot] = None
             self.data[slot] = None
 
-
+    def __setitem__(self, key, val):
+        self.put(key, val)
 
     def load_factor(self):
         '''The amount of the hash table that is occupide.'''
