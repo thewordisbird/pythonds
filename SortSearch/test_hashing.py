@@ -133,9 +133,11 @@ def test_Map_get_collision(map_fixture_data):
     assert testMap.get(0) == 'Justin'
     assert testMap.get(14) == 'collision_name'
 
-
-
-# test delete
+def test_Map_delitem(map_fixture_data):
+    testMap = map_fixture_data
+    assert testMap.get(0) == 'Justin'
+    del testMap[0]
+    assert testMap.get(0) == None
 
 # test setitem
 

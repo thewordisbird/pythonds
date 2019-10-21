@@ -134,6 +134,25 @@ class Map:
                     next_slot = self.rehash(next_slot)
             return self.data[next_slot]
 
+    def get_slot(self, key):
+        '''Helper function for del. Will return slot if exists or None'''
+        slot = self.remainder_hash(key)
+        if self.slots[slot] == key:
+            return slot
+        elif self.slots[slot] == None:
+            print('here')
+            return None
+        else:
+            next_slot = self.rehash(slot)
+            while self.slots[next_slot] != key and next_slot != slot:
+                if self.slots[next_slot] == key:
+                    print('found')
+                    return self.data[next_slot]
+                else:
+                    print(next_slot, slot)
+                    next_slot = self.rehash(next_slot)
+            return next_slot
+
     def remainder_hash(self, key):
         '''Remainder hash method. Divide item by table size and return remainder.'''
         return key % self.size
@@ -141,6 +160,16 @@ class Map:
     def rehash(self, hash):
         '''Increments hash value in case of collision'''
         return (hash + 1) % self.size
+
+    def __delitem__(self, key):
+        '''Delete key value pair using the built in del Map[key] operator'''
+        # Find item:
+        slot = self.get_slot(key)
+        if slot != None:
+            self.slots[slot] = None
+            self.data[slot] = None
+
+
 
     def load_factor(self):
         '''The amount of the hash table that is occupide.'''
