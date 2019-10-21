@@ -96,36 +96,43 @@ class Map:
         self.items = 0
 
     def put(self, key, val):
-        slot = remainder_hash(self.size, key)
+        slot = self.remainder_hash(key)
         if self.slots[slot] is None:
             self.slots[slot] = key
             self.data[slot] = val
         elif self.slots[slot] == key:
             self.data[slot] = val
         else:
-            next_slot = rehash(slot, self.size)
+            next_slot = self.rehash(slot)
             while self.slots[next_slot] != None and self.slots[next_slot] != key:
-                next_slot = rehash(next_slot, self.size)
+                next_slot = self.rehash(next_slot)
             if self.slots[next_slot] == None:
                 self.slots[next_slot] = key
                 self.data[next_slot] = val
             else:
                 self.data[next_slot] = data
 
+            # for testing return slot
+            slot = next_slot
+        return slot
+
     def get(self, key):
-        slot = remainder_hash(self.size, key)
+        slot = self.remainder_hash(key)
         if self.slots[slot] == key:
             return self.data[slot]
         elif self.slots[slot] == None:
+            print('here')
             return None
         else:
-            next_slot = rehash(slot, self.size)
+            next_slot = self.rehash(slot)
             while self.slots[next_slot] != key and next_slot != slot:
                 if self.slots[next_slot] == key:
+                    print('found')
                     return self.data[next_slot]
                 else:
-                    next_slot = rehash[next_slot, self.size]
-            return None
+                    print(next_slot, slot)
+                    next_slot = self.rehash(next_slot)
+            return self.data[next_slot]
 
     def remainder_hash(self, key):
         '''Remainder hash method. Divide item by table size and return remainder.'''

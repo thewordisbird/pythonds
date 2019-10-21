@@ -55,6 +55,7 @@ def map_fixture_data():
     testMap.put(2, 'Amanda')
     testMap.put(3, 'Laurie')
     testMap.put(5, 'Steve')
+    return testMap
 
 def test_Map_construction_empty(map_fixture_empty):
     '''Test that class constructor works'''
@@ -83,9 +84,6 @@ def test_Map_hash(map_fixture_empty, item, result):
     assert testMap.remainder_hash(item) == result
 
 
-#def test_Map_rehash(map_fixture_datagit):
-#    pass
-
 @pytest.mark.parametrize('key, val, result_slot',
                         [
                             (10, 'justin', 3),
@@ -99,7 +97,7 @@ def test_Map_put_empty(map_fixture_empty, key, val, result_slot):
     assert testMap.slots[result_slot] == key
     assert testMap.data[result_slot] == val
 
-def tets_Map_put_update(map_fixture_data):
+def test_Map_put_update(map_fixture_data):
     testMap = map_fixture_data
     assert testMap.size == 7
     assert testMap.slots[0] == 0
@@ -107,3 +105,38 @@ def tets_Map_put_update(map_fixture_data):
     testMap.put(0, 'new_name')
     assert testMap.slots[0] == 0
     assert testMap.data[0] == 'new_name'
+
+@pytest.mark.parametrize('hash, rehash',
+                        [
+                            (0, 1),
+                            (1, 2),
+                            (6, 0),
+                            (14, 1)
+                        ])
+def test_Map_rehash(map_fixture_empty, hash, rehash):
+    testMap = map_fixture_empty
+    assert testMap.rehash(hash) == rehash
+
+
+def test_Map_put_collision(map_fixture_data):
+    testMap = map_fixture_data
+    assert testMap.put(14, 'name') == 4
+    
+
+def test_Map_get(map_fixture_data):
+    testMap = map_fixture_data
+    assert testMap.get(0) == 'Justin'
+
+def test_Map_get_collision(map_fixture_data):
+    testMap = map_fixture_data
+    testMap.put(14, 'collision_name')
+    assert testMap.get(0) == 'Justin'
+    assert testMap.get(14) == 'collision_name'
+
+
+
+# test delete
+
+# test setitem
+
+# test getitem
