@@ -16,6 +16,24 @@ def selection_sort_i(nums):
         nums[pos_max], nums[i - 1] = nums[i - 1], nums[pos_max]
     return nums
 
+def selection_sort_r(nums, n=None):
+    if n == None:
+        n = len(nums)
+    if n == 0:
+        return nums
+    pos_max = 0
+    for i in range(n):
+        if nums[i] > nums[pos_max]:
+            pos_max = i
+    if pos_max > 0:
+        nums[pos_max], nums[n] = nums[n], nums[pos_max]
+    return selection_sort_r(nums, n - 1)
+    
+
+
+
+
 if __name__ == '__main__':
     print(selection_sort_i([0, -6, 3, 2, 1]))
+    print(selection_sort_r([0, -6, 3, 2, 1]))
     
