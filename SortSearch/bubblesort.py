@@ -1,5 +1,9 @@
 # Implement Bubble Sort
 
+# The bubble sort makes multiple passes through a list. It compares adjacent items and exchanges those that are out of order. 
+# Each pass through the list places the next largest value in its proper place. In essence, each item “bubbles” up to the location where it belongs.
+
+# Recursive implementation of bubble sort
 def bubble_sort_r(nums, n=None):
     if n == None:
         n = len(nums) - 1
@@ -16,7 +20,7 @@ def bubble_sort_r(nums, n=None):
         else:
             return bubble_sort_r(nums, n - 1)
 
-
+# Iterative implementation of bubble sort
 def bubble_sort_i(nums):
     for i in range(len(nums) - 1, 0 , -1):
         exchange = False
