@@ -1,63 +1,112 @@
 # Implement Merge Sort
 
-def mergesort(arr):
-    print(arr)
-    sort(arr, 0, len(arr) - 1)
-    return arr
+# Implementation of Merger Sort using slicing. This method creates multiple tempory lists with every slice which add time complexity O(k) per step in the sort.
+# This results in the sort being O(klong(n)) time the time complexity of O(n) for the merge resulting in a total time complexity of O(knlong(n)). 
+# This should still operate in a space complexity of O(n), since at each recursive level you are splittig the list into smaller parts that still add to n.
 
+def mergesort_slice(nums):
+ 
+    if len(nums) > 1:
+        
+        # Calculate mid
+        mid = len(nums) // 2
 
-def sort(arr, left_start, right_end):
-    if left_start >= right_end:
-        return
+        # recursively call function to get left and right sorted sub lists
+        left = mergesort_slice(nums[:mid])
+        right = mergesort_slice(nums[mid:])
+
+        # merge the sorted lists
+        merge_slice(nums, left, right)
     
-    mid = (left_start + right_end) // 2
+    return nums
     
-    print('left', left_start, mid)
-    sort(arr, left_start, mid)
+
+def merge_slice(nums, left, right):
     
-    print('right', mid + 1, right_end)
-    sort(arr, mid + 1, right_end)
+    # Set pointers and index
+    left_pointer = 0
+    right_pointer = 0
+    index = 0
     
-    merge(arr, left_start, right_end)
-
-
-def merge(arr, left_start, right_end):
-    result = []
-    left_end = (right_end + left_start) // 2
-    right_start = left_end + 1
-    size = right_end - left_start + 1
-
-    left_pointer = left_start
-    right_pointer = right_start
-
-    while left_pointer <= left_end and right_pointer <= right_end:
-        if arr[left_pointer] < arr[right_pointer]:
-            result.append(arr[left_pointer])
+    # Two finger algorithm to merge sorted sub lists into main list
+    while left_pointer < len(left) and right_pointer < len(right):
+        if left[left_pointer] <= right[right_pointer]:
+            nums[index] = left[left_pointer]
             left_pointer += 1
         else:
-            result.append(arr[right_pointer])
+            nums[index] = right[right_pointer]
             right_pointer += 1
         
+        index += 1
+
+    # Clear reamining items from left if any
+    while left_pointer < len(left):
+        nums[index] = left[left_pointer]
+        left_pointer += 1
+        index += 1
+
+    # Clear remaining items from right if any
+    while right_pointer < len(right):
+        nums[index] = right[right_pointer]
+        right_pointer += 1
+        index += 1
+
+# Implementation of merge sort without slicing. The recursve mergesort function sets the left and right pointers that allow for a mergesort step at a cost of O(1) and also
+# allow for inplace sort of the original list. This will be a true O(nlog(n)) time complexity and O(n) space complexity
+
+def mergesort_pointer(nums, left_start=0, right_end=None):
+    # Set right_end for first call
+    if right_end == None:
+        right_end = len(nums) - 1
     
-    # append any leftovers from left or right. There will only be laftovers in one list
-    for i in range(left_pointer, left_end):
-        result.append(arr[i])
+    # Base case
+    if left_start >= right_end:
+        return
+    else:
+        mid = (left_start + right_end) // 2
 
-    for j in range(right_pointer, right_end):
-        result.append(arr[j])
+        mergesort_pointer(nums, left_start, mid)
+        mergesort_pointer(nums, mid + 1, right_end)
 
+        merge_pointer(nums, left_start, right_end)
 
-    # Modify section of nums by replacing with sorted results
-    for k, val in enumerate(result):
-        arr[k + left_start] = val
+    return nums
+
+def merge_pointer(nums, left_start, right_end):
+    result = []
+
+    left_end = (left_start + right_end) // 2
+    right_start = left_end + 1
+    left_pointer = left_start
+    right_pointer = right_start
+    index = left_pointer
+
+    while left_pointer <= left_end and right_pointer <= right_end:
+        if nums[left_pointer] < nums[right_pointer]:
+            result.append(nums[left_pointer])
+            left_pointer += 1
+        else:
+            result.append(nums[right_pointer])
+            right_pointer += 1
+        
+    # Clear leftoveres
+    for i in range(left_pointer, left_end + 1):
+        result.append(nums[i])
     
+    for j in range(right_pointer, right_end + 1):
+        result.append(nums[j])
 
-
-
-  
+    # sort nums in place
+    for val in result:
+        nums[index] = val
+        index += 1
 
 
 if __name__ == '__main__':
     nums = [54, 26, 93, 17, 77, 31, 44, 55, 20]
-    nums = [5, 4, 3, 2, 1]
-    print(mergesort(nums))
+    #nums = [7, 6, 5, 4, 3, 2, 1]
+    print(mergesort_slice(nums), nums)
+    
+    nums = [54, 26, 93, 17, 77, 31, 44, 55, 20]
+    #nums = [7, 6, 5, 4, 3, 2, 1]
+    print(mergesort_pointer(nums), nums)
