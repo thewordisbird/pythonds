@@ -1,5 +1,9 @@
 # Implement Merge Sort
 
+# Merge sort is a recursive algorithm that continually splits a list in half. If the list is empty or has one item, it is sorted by definition (the base case). 
+# If the list has more than one item, we split the list and recursively invoke a merge sort on both halves. Once the two halves are sorted, the fundamental operation, 
+# called a merge, is performed. Merging is the process of taking two smaller sorted lists and combining them together into a single, sorted, new list.
+
 # Implementation of Merger Sort using slicing. This method creates multiple tempory lists with every slice which add time complexity O(k) per step in the sort.
 # This results in the sort being O(klong(n)) time the time complexity of O(n) for the merge resulting in a total time complexity of O(knlong(n)). 
 # This should still operate in a space complexity of O(n), since at each recursive level you are splittig the list into smaller parts that still add to n.
