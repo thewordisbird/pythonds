@@ -1,38 +1,63 @@
 # Implement Merge Sort
 
+def mergesort(arr):
+    print(arr)
+    sort(arr, 0, len(arr) - 1)
+    return arr
 
 
-def mergesort(nums):
-    if len(nums) > 1:
-        mid = int(len(nums) / 2)
-
-        left, right = mergesort(nums[:mid]), mergesort(nums[mid:])
-
-        return merge(left, right)
-    else:
-        return nums
-
-
-def merge(left, right):
-    print(left,right)
-    result = []
-    l_pointer = r_pointer = 0
+def sort(arr, left_start, right_end):
+    if left_start >= right_end:
+        return
     
-    while l_pointer < len(left) and r_pointer < len(right):
-        if left[l_pointer] < right[r_pointer]:
-            result.append(left[l_pointer])
-            l_pointer += 1
+    mid = (left_start + right_end) // 2
+    
+    print('left', left_start, mid)
+    sort(arr, left_start, mid)
+    
+    print('right', mid + 1, right_end)
+    sort(arr, mid + 1, right_end)
+    
+    merge(arr, left_start, right_end)
+
+
+def merge(arr, left_start, right_end):
+    result = []
+    left_end = (right_end + left_start) // 2
+    right_start = left_end + 1
+    size = right_end - left_start + 1
+
+    left_pointer = left_start
+    right_pointer = right_start
+
+    while left_pointer <= left_end and right_pointer <= right_end:
+        if arr[left_pointer] < arr[right_pointer]:
+            result.append(arr[left_pointer])
+            left_pointer += 1
         else:
-            result.append(right[r_pointer])
-            r_pointer += 1
+            result.append(arr[right_pointer])
+            right_pointer += 1
+        
+    
+    # append any leftovers from left or right. There will only be laftovers in one list
+    for i in range(left_pointer, left_end):
+        result.append(arr[i])
 
-    result.extend(left[l_pointer:])
-    result.extend(right[r_pointer:])
+    for j in range(right_pointer, right_end):
+        result.append(arr[j])
 
-    print(left, right, result)
-    return result
+
+    # Modify section of nums by replacing with sorted results
+    for k, val in enumerate(result):
+        arr[k + left_start] = val
+    
+
+
+
+  
 
 
 if __name__ == '__main__':
     nums = [54, 26, 93, 17, 77, 31, 44, 55, 20]
+    nums = [5, 4, 3, 2, 1]
     print(mergesort(nums))
