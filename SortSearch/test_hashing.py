@@ -149,3 +149,14 @@ def test_Map_setitem(map_fixture_empty):
 def test_Map_getitem(map_fixture_data):
     testMap = map_fixture_data
     assert testMap[0] == 'Justin'
+
+def contains(m, key):
+    if key in m:
+        return True
+    return False
+
+def test_Map_contains(map_fixture_data):
+    testMap = map_fixture_data
+    assert contains(testMap, 0) == True
+    assert contains(testMap, 6) == False
+    

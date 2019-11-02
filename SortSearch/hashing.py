@@ -175,6 +175,11 @@ class Map:
     def __getitem__(self, key):
         return self.get(key)
 
+    def __contains__(self, key):
+        if self.get(key) != None:
+            return True
+        return False
+
     def load_factor(self):
         '''The amount of the hash table that is occupide.'''
         return self.items/self.size
