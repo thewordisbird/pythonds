@@ -86,20 +86,36 @@ def buildParseTree(fpexp):
                 raise ValueError(f'Token {i} is not a valid integer')
     return eTree
 
-def evaluate(parseTree):
-    '''Recuresive evaluation of Binary tree for arthmetic'''
+def evaluate_pre(parseTree):
+    '''Recuresive postorder evaluation of Binary tree for arthmetic'''
     operators = {'+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.truediv}
-
+    print(parseTree.getRootVal())
     leftChild = parseTree.getLeftChild()
     rightChild = parseTree.getRightChild()
 
     # Check for base case... leaf. A node with no children
     if leftChild and rightChild:
         fn = operators[parseTree.getRootVal()]
-        return fn(evaluate(leftChild), evaluate(rightChild))
+        return fn(evaluate_pre(leftChild), evaluate_pre(rightChild))
     else:
         return parseTree.getRootVal()
 
+def evaluate_post(parseTree):
+    operators = {'+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.truediv}
+    
+    leftChild = parseTree.getLeftChild()
+    rightChild = parseTree.getRightChild()
+
+    if leftChild and rightChild:
+        n_1 = evaluate_post(leftChild)
+        n_2 = evaluate_post(rightChild)
+        return operators[parseTree.getRootVal()](n_1, n_2)
+    else:
+        return parseTree.getRootVal()
+
+
+
 if __name__ == "__main__":
     pt = buildParseTree("( ( 10 + 5 ) * 3 )")
-    print(evaluate(pt))
+    print(evaluate_pre(pt))
+    print(evaluate_post(pt))
