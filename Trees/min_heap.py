@@ -1,5 +1,16 @@
 # Implementation of minHeap following HackerRank class/method structure
 
+# The important thing to remeber with a min or max heap is that it uses a simple list or array
+# as the underlying data structure. The left child is at (2 * p) + 1 and the right child is at
+# (2 * p) + 2. The parent of a child is at (c - 1) // 2. Using these relationships the rest of 
+# the methods are mearly helpers. 
+# 
+# The only other considerations are heapify up and heapify down. The are used when adding or
+# removing an item respectively. Using heapify down as an example, After the root is returned, the
+# last element is moved to the root. At this point you find its smallest child and compare the 
+# two. If the index element value is larger than the smallest child's value, you swap them until
+# the heap is satisfied.
+
 class MinHeap():
     def __init__(self):
         self.heap_list = []
