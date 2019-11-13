@@ -49,6 +49,10 @@ def non_empty_bst():
 def new_node():
     return Node(35, 'Justin', 'left_child', 'right_child', 'parent')
 
+@pytest.fixture(scope='function')
+def no_children_node():
+    return Node(35, 'Justin')
+
 def test_BST_construct(empty_bst):
     bst = empty_bst
     assert bst.root == None
@@ -88,6 +92,18 @@ def test_set_parent(new_node):
     node = new_node
     node.set_parent('new_left_child')
     assert node.get_parent() == 'new_left_child'
+
+
+def test_has_children(new_node, no_children_node):
+    node_a = new_node
+    assert node_a.has_left_child() == True
+    assert node_a.has_right_child() == True
+    assert node_a.has_parent() == True
+
+    node_b = no_children_node
+    assert node_b.has_left_child() == False
+    assert node_b.has_right_child() == False
+    assert node_b.has_parent() == False
 
 def test_bst_put_root_node(empty_bst):
     bst = empty_bst
@@ -164,23 +180,32 @@ def test_bst_put_mid_leaf_non_empty(non_empty_bst):
     assert bst.root.get_right_child().get_left_child().get_right_child().has_left_child() == False
     assert bst.root.get_right_child().get_left_child().get_right_child().has_right_child() == False
 
-
-# LEFT OFF HERE. DON'T THINK I NEED THIS TEST
-def test_bst_put_mid_node_non_empty(non_empty_bst):
-    # GIVEN a non empty bst with size greater than 1
-    # WHEN a node with a value between two nodes is added
-    # THEN the new node should become the parent of the node it is greater than
-    #   and the branch child of the node it is less than
-    bst = non_empty_bst
-    bst.put(35, 'new_node')
-    assert bst.root.key == 70
-    assert bst.root.get_left_child().key == 35
-    assert bst.root.get_left_child().value == 'new_node'
-    assert bst.root.get_left_child().parent == bst.root
-
-def test_bst_length(empty_bst):
+def test_bst_setitem(empty_bst):
     bst = empty_bst
-    assert bst.length() == 0
+    bst[3] = 'setitem'
+    assert bst.root.key == 3
+    assert bst.root.value == 'setitem'
+
+def test_bst_length(non_empty_bst):
+    bst = non_empty_bst
+    assert bst.length() == 7
+    assert len(bst) == 7
+
+def test_bst_get(non_empty_bst):
+    bst = non_empty_bst
+    assert bst.get(3) == None
+    assert bst.get(73) == 'F'
+    assert bst.get(14) == 'C'
+
+def test_bst_getitem(non_empty_bst):
+    bst = non_empty_bst
+    assert bst[3] == None
+    assert bst[73] == 'F'
+    assert bst[14] == 'C'
+
+def test_bst_get_empty(empty_bst):
+    bst = empty_bst
+    assert bst[3] == None
 
 
 

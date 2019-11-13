@@ -74,16 +74,14 @@ class BST:
             if current_node.has_right_child():
                 self.__put(key,value, current_node.get_right_child())
             else:
-                current_node.set_right_child(Node(key, value, parent=current_node))
-        
-
+                current_node.set_right_child(Node(key, value, parent=current_node)) 
 
     def __setitem__(self, key, value):
         self.put(key, value)
 
     def get(self, key):
         if self.root:
-            result_node = self.__get(key, current_node)
+            result_node = self.__get(key, self.root)
             if result_node:
                 return result_node.value
             else:
@@ -92,7 +90,7 @@ class BST:
             return None
 
     def __get(self, key, currrent_node):
-        '''Recursively search tree for key and return value if found.'''
+        '''Recursively search tree for key and return node if found.'''
         if currrent_node == None:
             return None
         elif currrent_node.key == key:
@@ -105,91 +103,26 @@ class BST:
     def __getitem__(self, key):
         return self.get(key)
 
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-###
-class TreeNode:
-    def __init__(self, key, val, left_child=None, right_child=None, parent=None):
-        self.key = key
-        self.val = val
-        self.left_child = left
-        self.right_child = right
-        self.parent = parent
-
-    def has_left_child(self):
-        return self.left_child
-
-    def has_right_child(self):
-        return self.right_child
-
-    def is_left_child(self):
-        return self.parent and self.parent.left_child == self
-
-    def is_right_child(self):
-        return self.parent and self.parent.right_child == self
-
-    def is_root(self):
-        return self.parent is None
-
-    def is_leaf(self):
-        return not self.left_child and not self.right_child
-
-    def has_any_children(self):
-        return self.left_child or self.right_child
-
-    def has_both_childern(self):
-        return self.left_child and self.right_child
-
-    def splice_out(self):
-        if self.is_leaf():
-            if self.is_left_child():
-                self.parent.left_child = None
+    def remove(self, key):
+        '''Removes and returns node if found, None if not found'''
+        if self.size > 1:
+            target_node = self.__get(self, key, self.root)
+            if target_node:
+                if target_node.parent.get_left_child() == target_node:
+                    if target_node.has_left_child() and not target_node.has_right_child():
+                        target_node.get_left_child().set_parent(target_node.get_parent())
+                        target_node.get_parent().set_left_child(target_node.get_left_child())
+                        return target_node
+                    elif not target_node.has_left_child() and target_node.has_right_child():
+                        target_node.get_right_child().set_parent(target_node.get_parent())
+                        target_node.get_parent().set_left_child(target_node.get_right_child())
+                        return target_node
+                    else:
+                        target_node.get_left_child().set_parent(target_node.get_parent())
+                        target_node.get_parent().set_left_child(target_node.get_left_child())
+                        target_node.get_right_child().set_parent(target_node.get_left_child())
+                        target_node.get_left_child().set
             else:
-                self.parent.right_child = None
-        elif self.has_any_children():
-            if self.has_left_child():
-                self.parent.left_child = self.left_child
-            else:
-                self.parent.right_child = self.left_child
-            self.left_child.parent = self.parent
+                return None
 
 
-
-class BinarySearchTree:
-    def __init__(self):
-        self.root = None
-        self.size = 0
-
-    def length(self):
-        return self.size
-    
-    def __len__(self):
-        return self.size
-
-    def put(self, key, val):
-        '''Insert a key, value pair into the bst'''
-        # If the tree exists, use the recursive _put method to find where the new item
-        # should go in the bst.
-        if self.root:
-            self._put(key, val, self.root)
-
-        # If the tree is empty add the new item as the bst root.
-        else:
-            self.root = TreeNode(key, val)
-        self.size += 1
-
-    def __iter__(self):
-        return self.root.__iter__()
