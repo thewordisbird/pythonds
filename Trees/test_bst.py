@@ -207,5 +207,48 @@ def test_bst_get_empty(empty_bst):
     bst = empty_bst
     assert bst[3] == None
 
+def test_inorder_traversal(non_empty_bst):
+    bst = non_empty_bst
+    result = bst.inorder_traversal(bst.root)
+    assert result == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
 
+def test_delete_root_node(non_empty_bst):
+    bst = non_empty_bst
+    bst.delete(70)
+    assert bst.root.key == 73
+
+def test_delete_leaf_node(non_empty_bst):
+    bst = non_empty_bst
+    bst.delete(23)
+    assert bst.size == 6
+    assert bst.inorder_traversal(bst.root) == [{14: 'C'},  {31: 'B'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
+
+
+def test_delete_node_sigle_left_tree(non_empty_bst):
+    bst = non_empty_bst
+    bst.delete(31)
+    assert bst.size == 6
+    assert bst.inorder_traversal(bst.root) == [{14: 'C'}, {23: 'D'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
+
+def test_delete_key_not_in_tree(non_empty_bst, rooted_bst, empty_bst):
+    # Test tree greater than 1   
+    with pytest.raises(KeyError): 
+        non_empty_bst.delete(69)
+    
+    with pytest.raises(KeyError): 
+        rooted_bst.delete(69)
+
+    with pytest.raises(KeyError): 
+        empty_bst.delete(69)
+
+def test_delete_root_sigle_node_tree(rooted_bst):
+    rooted_bst.delete(35)
+    assert rooted_bst.root == None
+    
+def test_bst_delitem(rooted_bst):
+    del rooted_bst[35]
+    assert rooted_bst.root == None
+
+
+    
 

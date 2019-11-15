@@ -42,6 +42,33 @@ class Node:
     def has_parent(self):
         return self.parent != None
 
+    def find_succesor(self):        
+        if not self.has_left_child() and self.has_right_child():
+            # Case 1 Node has no children
+            successor_node = None          
+        elif self.has_left_child() and self.has_right_child():
+            # Case 2 Node has both children
+            # Find the minimum node in the right tree
+            successor_node = self.get_right_child().find_min()        
+        else:
+            # Case 3 Node has one Child 
+            if self.has_left_child():
+                # Case 3.1 Node has only left child
+                successor_node = self.get_left_child()
+            else:
+                # Case 3.2 Node has only right child
+                successor_node = self.get_right_child
+
+        return successor_node
+
+    def find_min(self):
+        '''Returns the minimum node in a subtree rooted with the 
+            instance node'''
+        current_node = self
+        while current_node.has_left_child():
+            current_node = current_node.get_left_child()
+            
+        return current_node
 
 class BST:
     def __init__(self):
@@ -103,26 +130,103 @@ class BST:
     def __getitem__(self, key):
         return self.get(key)
 
-    def remove(self, key):
-        '''Removes and returns node if found, None if not found'''
+    # Needs testing
+    def delete(self, key):
+        print(key, self.size)
         if self.size > 1:
-            target_node = self.__get(self, key, self.root)
-            if target_node:
-                if target_node.parent.get_left_child() == target_node:
-                    if target_node.has_left_child() and not target_node.has_right_child():
-                        target_node.get_left_child().set_parent(target_node.get_parent())
-                        target_node.get_parent().set_left_child(target_node.get_left_child())
-                        return target_node
-                    elif not target_node.has_left_child() and target_node.has_right_child():
-                        target_node.get_right_child().set_parent(target_node.get_parent())
-                        target_node.get_parent().set_left_child(target_node.get_right_child())
-                        return target_node
-                    else:
-                        target_node.get_left_child().set_parent(target_node.get_parent())
-                        target_node.get_parent().set_left_child(target_node.get_left_child())
-                        target_node.get_right_child().set_parent(target_node.get_left_child())
-                        target_node.get_left_child().set
+            node_to_remove = self.__get(key, self.root)
+            if node_to_remove:
+                self.remove(node_to_remove)
+                self.size -= 1
             else:
-                return None
+                raise KeyError('Error, key not found in tree.')
+        elif self.size == 1 and self.root.key == key:
+            self.root = None
+            self.size -= 1
+        else:
+            raise KeyError('Error, key not found in tree.')
+    
+    # Needs testing
+    def __delitem__(self, key):
+        self.delete(key)
+    
+    # Needs testing
+    def remove(self, node):
+        if not node.has_left_child() and not node.has_right_child():
+            # Node is a leaf node
+            if node == node.get_parent().get_left_child():
+                node.get_parent().set_left_child(None)
+            else:
+                node.get_parent().set_right_child(None)
+        
+        elif node.has_left_child() and node.has_right_child():
+            # Node has both children
+            successor = node.find_succesor()
+            # Note: the successor will be the minimum node in the right sub tree. 
+            # Because it's the minimum it will have no left branches
+            # so we need to check to see if the successor is a leaf or not, modify to the
+            # child pointers if so, and replace the node to be deleted with the successor
+            if successor.has_right_child():
+                successor.get_right_child().set_parent(successor.get_parent())
+                successor.get_parent().set_left_child(successor.get_right_child())
+            else:
+                successor.get_parent().set_left_child(None)
+            # Once the successor has been splice from its original location, it can
+            # replace the node to be deleted. We need to update the node to be deleted's 
+            # right and left children to point to the successor as parent and the successor
+            # to point to them as children
+            successor.set_left_child(node.get_left_child())
+            if successor.has_right_child():
+                successor.set_right_child(node.get_right_child())
+
+            if node.has_parent():
+                successor.set_parent(node.get_parent())
+                if node.get_parent().get_left_child() == node:
+                    node.get_parent().set_left_child(successor)
+                else:
+                    node.get_parent().set_right_child(successor)
+            else:
+                successor.set_parent(None)
+                self.root = successor
+
+        else:
+            # Node has only one child
+            if node.has_left_child():
+                if node.has_parent():
+                    if node == node.get_parent().get_left_child():
+                        node.get_left_child().set_parent(node.get_parent())
+                        node.get_parent().set_left_child(node.get_left_child())
+                    elif node == node.get_parent().get_right_child():
+                        node.get_left_child().set_parent(node.get_parent())
+                        node.get_parent().set_right_child(node.get_left_child())
+                else:
+                    node.get_left_child().set_parent(None)
+                    self.root = node.get_left_child()
+            else:
+                if node.has_parent():
+                    if node == node.get_parent().get_left_child():
+                        node.get_right_child().set_parent(node.get_parent())
+                        node.get_parent().set_left_child(node.get_right_child())
+                    elif node == node.get_parent().get_right_child():
+                        node.get_right_child().set_parent(node.get_parent())
+                        node.get_parent().set_right_child(node.get_right_child())
+                else:
+                    node.get_right_child().set_parent(None)
+                    self.root = node.get_right_child()
+
+    def inorder_traversal(self, node):
+        return self.inorder_traversal(node.get_left_child()) + \
+                    [{node.key: node.value}] + \
+                    self.inorder_traversal(node.get_right_child()) \
+                    if node else []
+
+        
+            
+
+        
+
+
+    
+    
 
 
