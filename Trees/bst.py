@@ -132,7 +132,6 @@ class BST:
 
     # Needs testing
     def delete(self, key):
-        print(key, self.size)
         if self.size > 1:
             node_to_remove = self.__get(key, self.root)
             if node_to_remove:
@@ -160,8 +159,14 @@ class BST:
                 node.get_parent().set_right_child(None)
         
         elif node.has_left_child() and node.has_right_child():
+            print(f'node key: {node.key}')
+            if node.has_left_child():
+                print(f'node left: {node.get_left_child().key}')
+            if node.has_right_child():
+                print(f'node_right: {node.get_right_child().key}')
             # Node has both children
             successor = node.find_succesor()
+            print(f'successor key: {successor.key}')
             # Note: the successor will be the minimum node in the right sub tree. 
             # Because it's the minimum it will have no left branches
             # so we need to check to see if the successor is a leaf or not, modify to the
@@ -170,12 +175,15 @@ class BST:
                 successor.get_right_child().set_parent(successor.get_parent())
                 successor.get_parent().set_left_child(successor.get_right_child())
             else:
-                successor.get_parent().set_left_child(None)
+                successor.set_left_child(node.get_left_child())
+                node.get_left_child().set_parent(successor)
             # Once the successor has been splice from its original location, it can
             # replace the node to be deleted. We need to update the node to be deleted's 
             # right and left children to point to the successor as parent and the successor
             # to point to them as children
+            
             successor.set_left_child(node.get_left_child())
+            
             if successor.has_right_child():
                 successor.set_right_child(node.get_right_child())
 

@@ -1,6 +1,9 @@
 import pytest
 from bst import BST, Node
 
+# Run the below command to see the coverage missing report
+# pytest --cov-report term-missing --cov=bst
+
 @pytest.fixture(scope='function')
 def empty_bst():
     return BST()
@@ -222,7 +225,10 @@ def test_delete_leaf_node(non_empty_bst):
     bst.delete(23)
     assert bst.size == 6
     assert bst.inorder_traversal(bst.root) == [{14: 'C'},  {31: 'B'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
-
+    bst.delete(73)
+    assert bst.size == 5
+    assert bst.inorder_traversal(bst.root) == [{14: 'C'},  {31: 'B'}, {70: 'A'}, {93: 'E'}, {94: 'G'}]
+    
 
 def test_delete_node_sigle_left_tree(non_empty_bst):
     bst = non_empty_bst
@@ -244,10 +250,24 @@ def test_delete_key_not_in_tree(non_empty_bst, rooted_bst, empty_bst):
 def test_delete_root_sigle_node_tree(rooted_bst):
     rooted_bst.delete(35)
     assert rooted_bst.root == None
+
+def test_delete_full_parent_node(non_empty_bst):
+    print(non_empty_bst.inorder_traversal(non_empty_bst.root))
+    non_empty_bst.delete(93)
+    print(non_empty_bst.inorder_traversal(non_empty_bst.root))
+    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {94: 'G'}]
+
+def test_delete_full_tree_root(non_empty_bst):
+    non_empty_bst.delete(70)
+    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
+
+# WRITE TEST TO TARGET LINES 175-176
     
 def test_bst_delitem(rooted_bst):
     del rooted_bst[35]
     assert rooted_bst.root == None
+
+
 
 
     
