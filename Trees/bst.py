@@ -151,6 +151,7 @@ class BST:
     
     # Needs testing
     def remove(self, node):
+        #print(f'Node to remove: {node.key}')
         if not node.has_left_child() and not node.has_right_child():
             # Node is a leaf node
             if node == node.get_parent().get_left_child():
@@ -159,43 +160,58 @@ class BST:
                 node.get_parent().set_right_child(None)
         
         elif node.has_left_child() and node.has_right_child():
-            print(f'node key: {node.key}')
-            if node.has_left_child():
-                print(f'node left: {node.get_left_child().key}')
-            if node.has_right_child():
-                print(f'node_right: {node.get_right_child().key}')
             # Node has both children
             successor = node.find_succesor()
-            print(f'successor key: {successor.key}')
+            print(successor.get_right_child().key)
+            #print(f'successor key: {successor.key}')
             # Note: the successor will be the minimum node in the right sub tree. 
             # Because it's the minimum it will have no left branches
-            # so we need to check to see if the successor is a leaf or not, modify to the
+            # so we need to check to see if the successor is a leaf or not, modify the
             # child pointers if so, and replace the node to be deleted with the successor
+
+            # The below two if statements will remove all references to the successor in the tree
+            if not successor.has_left_child() and not successor.has_right_child():
+                if successor == successor.get_parent().get_left_child():
+                    successor.get_parent().set_left_child(None)
+                else:
+                    successor.get_parent().set_right_child(None)
+
+            #NEEDS TESTING. SOMETHING ABOUT CHILD POINTER TRANSFER. IT WAS SET TO NONE
             if successor.has_right_child():
-                successor.get_right_child().set_parent(successor.get_parent())
-                successor.get_parent().set_left_child(successor.get_right_child())
-            else:
-                successor.set_left_child(node.get_left_child())
-                node.get_left_child().set_parent(successor)
+                if successor == successor.get_parent().get_left_child():
+                    successor.get_parent().set_left_child(successor.get_left_child())
+                else:
+                    successor.get_parent().set_right_child(successor.get_right_child())
+            
             # Once the successor has been splice from its original location, it can
             # replace the node to be deleted. We need to update the node to be deleted's 
             # right and left children to point to the successor as parent and the successor
             # to point to them as children
             
-            successor.set_left_child(node.get_left_child())
+            # Set successor new left child
             
-            if successor.has_right_child():
-                successor.set_right_child(node.get_right_child())
-
+            # The below statements will update the successor with the node's references             
             if node.has_parent():
                 successor.set_parent(node.get_parent())
-                if node.get_parent().get_left_child() == node:
+                if node == node.get_parent().get_left_child():
                     node.get_parent().set_left_child(successor)
                 else:
                     node.get_parent().set_right_child(successor)
             else:
                 successor.set_parent(None)
                 self.root = successor
+
+            if node.has_left_child():
+                successor.set_left_child(node.get_left_child())
+                node.get_left_child().set_parent(successor)
+            else:
+                successor.set_left_child(None)
+            
+            if node.has_right_child():
+                successor.set_right_child(node.get_right_child())
+                node.get_right_child().set_parent(successor)
+            else:
+                successor.set_right_child(None)
 
         else:
             # Node has only one child

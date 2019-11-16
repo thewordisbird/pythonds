@@ -261,6 +261,13 @@ def test_delete_full_tree_root(non_empty_bst):
     non_empty_bst.delete(70)
     assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
 
+def test_delete_successor_with_right_child(non_empty_bst):
+    non_empty_bst[96] = 'New Node'
+    print(f'Items: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
+    non_empty_bst.delete(93)
+    print(f'Items after delete: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
+    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {94: 'G'}, {96: 'New Node'}]
+
 # WRITE TEST TO TARGET LINES 175-176
     
 def test_bst_delitem(rooted_bst):
