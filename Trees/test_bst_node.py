@@ -1,5 +1,6 @@
 import pytest
 from bst import Node
+
 # ------FIXTURES------
 @pytest.fixture(scope='function')
 def new_node():
