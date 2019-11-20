@@ -42,33 +42,7 @@ class Node:
     def has_parent(self):
         return self.parent != None
 
-    def find_succesor(self):        
-        if not self.has_left_child() and self.has_right_child():
-            # Case 1 Node has no children
-            successor_node = None          
-        elif self.has_left_child() and self.has_right_child():
-            # Case 2 Node has both children
-            # Find the minimum node in the right tree
-            successor_node = self.get_right_child().find_min()        
-        else:
-            # Case 3 Node has one Child 
-            if self.has_left_child():
-                # Case 3.1 Node has only left child
-                successor_node = self.get_left_child()
-            else:
-                # Case 3.2 Node has only right child
-                successor_node = self.get_right_child
-
-        return successor_node
-
-    def find_min(self):
-        '''Returns the minimum node in a subtree rooted with the 
-            instance node'''
-        current_node = self
-        while current_node.has_left_child():
-            current_node = current_node.get_left_child()
-            
-        return current_node
+    
 
 class BST:
     def __init__(self):
@@ -148,10 +122,65 @@ class BST:
     # Needs testing
     def __delitem__(self, key):
         self.delete(key)
+
+    def find_successor(self, node):
+        '''Finds and returns the appropriate successor node depending
+            on the position of the node being deleted''' 
+        # Case 1 Node has no children       
+        if not node.has_left_child() and node.has_right_child():            
+            return None      
+
+        # Case 2 Node has both children. The successor is the node
+        #   with the minimum key value in the right sub-tree
+        elif node.has_left_child() and node.has_right_child():
+            return self.find_min(node.get_right_child())        
+
+        # Case 3 Node has only one child. The successor is the
+        # child of the given node
+        else:
+            if node.has_left_child():
+                return node.get_left_child()
+            else:
+                return node.get_right_child
+
+    def find_min(self, node):
+        '''Returns the minimum node in a subtree rooted with the 
+            instance node'''
+        current_node = node
+        while current_node.has_left_child():
+            current_node = current_node.get_left_child()
+            
+        return current_node
+
+    def splice_successor(self, successor_node):
+        '''Removes all refrences to the successor node and re-directs 
+            relatives to the appropriate node'''
+        # Case 1. Successor node is a leaf.
+        if not successor_node.has_left_child() and not successor_node.has_right_child():
+            if successor_node == successor_node.get_parent().get_left_child():
+                successor_node.get_parent().set_left_child(None) 
+            else:
+                successor_node.get_parent().set_right_child(None)
+
+        # Case 2. Successor node has right child. Note: successor node can
+        #   never have a left child since the successor node is the min key
+        #   value in a sub-tree
+        else:
+            if successor_node == successor_node.get_parent().get_left_child():
+                successor_node.get_parent().set_left_child(successor_node.get_right_child()) 
+            else:
+                successor_node.get_parent().set_right_child(successor_node.get_right_child())
+                
+    def insert_successor(self, successor_node, deleted_node):
+        '''replaces the successor node pointers with those of the deleted node.
+            in effect de-refrenceing the deleted node and inserting the successor
+            node in its place'''
+        pass
+
     
     # Needs testing
     def remove(self, node):
-        #print(f'Node to remove: {node.key}')
+        
         if not node.has_left_child() and not node.has_right_child():
             # Node is a leaf node
             if node == node.get_parent().get_left_child():
@@ -161,23 +190,24 @@ class BST:
         
         elif node.has_left_child() and node.has_right_child():
             # Node has both children
-            successor = node.find_succesor()
-            print(successor.get_right_child().key)
-            #print(f'successor key: {successor.key}')
+            
+            successor = self.find_successor(node)
+            print(f'successor: {successor.key}')
+            
             # Note: the successor will be the minimum node in the right sub tree. 
             # Because it's the minimum it will have no left branches
             # so we need to check to see if the successor is a leaf or not, modify the
             # child pointers if so, and replace the node to be deleted with the successor
 
-            # The below two if statements will remove all references to the successor in the tree
+            # Is successor a leaf
             if not successor.has_left_child() and not successor.has_right_child():
                 if successor == successor.get_parent().get_left_child():
                     successor.get_parent().set_left_child(None)
                 else:
                     successor.get_parent().set_right_child(None)
 
-            #NEEDS TESTING. SOMETHING ABOUT CHILD POINTER TRANSFER. IT WAS SET TO NONE
-            if successor.has_right_child():
+            # Successor is not a leaf and has a right child
+            else:
                 if successor == successor.get_parent().get_left_child():
                     successor.get_parent().set_left_child(successor.get_left_child())
                 else:
@@ -190,7 +220,8 @@ class BST:
             
             # Set successor new left child
             
-            # The below statements will update the successor with the node's references             
+            # The below statements will update the successor with the node's references
+                         
             if node.has_parent():
                 successor.set_parent(node.get_parent())
                 if node == node.get_parent().get_left_child():
@@ -245,8 +276,24 @@ class BST:
                     if node else []
 
         
-            
-
+if __name__ == "__main__":
+    print('test')
+    bst = BST()
+    bst[70] = 'A'
+    bst[31] = 'B'
+    bst[14] = 'C'
+    bst[23] = 'D'
+    bst[93] = 'E'
+    bst[94] = 'F'
+    bst[96] = 'G'
+    bst[73] = 'H'
+    bst[80] = 'I'
+    bst[75] = 'J'
+    bst[76] = 'K'
+    bst[71] = 'L'
+    print(bst.size)
+    bst.delete(73)
+    print(bst.size)
         
 
 
