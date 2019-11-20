@@ -52,6 +52,20 @@ def non_empty_bst():
 
     return bst
 
+@pytest.fixture(scope='function')
+def full_bst():
+    nodes = [
+                (70, 'A'), (31, 'B'), (93, 'C'), (14, 'D'), (73, 'E'), 
+                (94, 'F'), (23, 'G'), (71, 'H'), (80, 'I'), (96, 'J'),
+                (75, 'K'), (85, 'L'), (95, 'M'), (74, 'N'), (76, 'O')
+            ]
+    bst = BST()
+    for node in nodes:
+        bst.put(node[0], node[1])
+
+    return bst
+
+
 # ------TESTS------
 def test_BST_construct(empty_bst):
     '''Test bst construction'''
@@ -199,90 +213,178 @@ def test_inorder_traversal(non_empty_bst):
     #   be returned
     assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
 
-@pytest.mark.delete_method_tests
-def test_delete_root_sigle_node_tree(rooted_bst):
-    '''Test deleting the root node in a bst with only a root node'''
+# --- New delete method tests ---
+def test_find_min(full_bst):
+    '''Test find_min returns the minimum value in a sub-tree'''
+    # GIVE a node
+    # WHEN find_min is passed that node
+    # THEN it will return the minimum key value in the subtree
+    #   rooted at that node.
+    node = full_bst._get(70, full_bst.root)
+    min = full_bst.find_min(node)
+    assert min.key == 14
+
+def test_find_successor_single_item_tree(rooted_bst):
+    '''Test find_successor returns None for a root node'''
+    # GIVEN a root node
+    # WHEN find_successor is passed that node
+    # THEN it will return None
+    node = rooted_bst.root
+    successor = rooted_bst.find_successor(node)
+    assert successor is None
+
+def test_find_successor_leaf_node(full_bst):
+    '''Test find_successor returns None for a leaf node'''
+    # GIVEN a leaf node
+    # WHEN find_successor is passed that node
+    # THEN it will return None
+    node = full_bst._get(23, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor is None
+
+    node = full_bst._get(74, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor is None
+
+    node = full_bst._get(95, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor is None
+
+def test_find_successor_node_with_both_children(full_bst):
+    '''Test find_successor returns minimum key value in the right
+        tree when passed a node with both children'''
+    # GIVEN a node with both children
+    # WHEN find_successor is passed that node
+    # THEN it will return the minimum value node of the right sub-tree
+    node = full_bst._get(93, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 94
+
+    node = full_bst._get(73, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 74
+
+    node = full_bst._get(75, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 76
+
+def test_find_successor_node_with_only_one_child(full_bst):
+    '''Test find_successor returns its child when passed a
+        node with only one child'''
+    # GIVEN a node with only one child
+    # WHEN find_successor is passed that node
+    # THEN it will return its child node
+    node = full_bst._get(14, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 23
+
+    node = full_bst._get(31, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 14
+
+    node = full_bst._get(94, full_bst.root)
+    successor = full_bst.find_successor(node)
+    assert successor.key == 96
+
+def test_splice_successor_leaf(full_bst):
+    '''Test splice_successor removes references to successor
+        that is a leaf node'''
+    # GIVEN a successor node that is a leaf
+    # WHEN the node is spliced from the tree
+    # THEN its parent's respective child refrence is
+    #   set to None
+    successor_node = full_bst._get(23, full_bst.root)
+    full_bst.splice_successor(successor_node)
+    assert successor_node.get_parent().get_right_child() == None
+
+    successor_node = full_bst._get(74, full_bst.root)
+    full_bst.splice_successor(successor_node)
+    assert successor_node.get_parent().get_left_child() == None
+
+def test_splice_successor_with_right_child(full_bst):
+    '''Test splice_successor removes references to successor
+        from parent and right child and connects the two nodes'''
+    # GIVEN a successor node that has a right child
+    # WHEN the node is splice from the tree
+    # THEN its parents respective child will refrence the
+    #   successor_node's right child and the right child will
+    #   reference the parent
+    successor_node = full_bst._get(14, full_bst.root)
+    successor_parent_node = successor_node.get_parent()
+    successor_child_node = successor_node.get_right_child()
+    full_bst.splice_successor(successor_node)
+    assert successor_parent_node.get_left_child() == successor_child_node
+    assert successor_child_node.get_parent() == successor_parent_node
+
+    successor_node = full_bst._get(94, full_bst.root)
+    successor_parent_node = successor_node.get_parent()
+    successor_child_node = successor_node.get_right_child()
+    full_bst.splice_successor(successor_node)
+    assert successor_parent_node.get_right_child() == successor_child_node
+    assert successor_child_node.get_parent() == successor_parent_node
+
+def test_insert_successor_single_root(rooted_bst):
+    '''Test insert_successor passed a None value and a root
+        node with no children'''
     # GIVEN a bst with only a root node
-    # WHEN using the delete method passed a key to the node
-    # THEN the node is removed from the bst and the bst atributes are
-    #   reset to the values for an empty bst
-    rooted_bst.delete(35)
+    # WHEN insert_successor is called with a None value
+    #   given as the successor_node
+    # THEN the bst root attribute will be set to None
+    rooted_bst.insert_successor(None, rooted_bst.root)
     assert rooted_bst.root == None
-    assert rooted_bst.size == 0
 
-@pytest.mark.delete_method_tests
-def test_delete_root_node(non_empty_bst):
-    '''Test deleting the root node of a non-empty bst
-        using the delete method of the bst class'''
-    # GIVEN a non-empty bst
-    # WHEN using the delete method passed a key to a node
-    # THEN the node is deleted, and replaced with the minimum keyed
-    #   node in the right sub-tree
-    non_empty_bst.delete(70)
-    assert non_empty_bst.root.key == 73
-    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
+def test_insert_successor_leaf_node(full_bst):
+    '''Test insert_successor passed a None value and a leaf
+        node'''
+    # GIVEN a deleted_node that is a leaf node
+    # WHEN insert_successor is called with a successor_node
+    #  of value None
+    # THEN the leaf node's parent's respective child node
+    #   will be set to None
+    deleted_node = full_bst._get(74, full_bst.root)
+    deleted_node_parent = deleted_node.get_parent()
+    full_bst.insert_successor(None, deleted_node)
+    assert deleted_node_parent.get_left_child() == None
 
-def test_delete_root_node_only_one_child(rooted_bst):
-    pass
+    deleted_node = full_bst._get(76, full_bst.root)
+    deleted_node_parent = deleted_node.get_parent()
+    full_bst.insert_successor(None, deleted_node)
+    assert deleted_node_parent.get_right_child() == None
 
-
-def test_delete_leaf_node(non_empty_bst):
-    bst = non_empty_bst
-    bst.delete(23)
-    assert bst.size == 6
-    assert bst.inorder_traversal(bst.root) == [{14: 'C'},  {31: 'B'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
-    bst.delete(73)
-    assert bst.size == 5
-    assert bst.inorder_traversal(bst.root) == [{14: 'C'},  {31: 'B'}, {70: 'A'}, {93: 'E'}, {94: 'G'}]
+def test_insert_successor_both_children(full_bst):
+    '''Test insert_successor passed a valid successor and
+        a deleted_node with both children'''
+    # GIVEN a deleted node that has both children
+    # WHEN insert_successor is called with a valid Non-None
+    #   successor_node
+    # THEN the successor node will be inserted in the place of
+    #   the deleted_node
+    deleted_node = full_bst._get(93, full_bst.root)
+    successor_node = full_bst.find_successor(deleted_node)
+    full_bst.splice_successor(successor_node)
     
-
-def test_delete_node_sigle_left_tree(non_empty_bst):
-    bst = non_empty_bst
-    bst.delete(31)
-    assert bst.size == 6
-    assert bst.inorder_traversal(bst.root) == [{14: 'C'}, {23: 'D'}, {70: 'A'}, {73: 'F'}, {93: 'E'}, {94: 'G'}]
-
-def test_delete_key_not_in_tree(non_empty_bst, rooted_bst, empty_bst):
-    # Test tree greater than 1   
-    with pytest.raises(KeyError): 
-        non_empty_bst.delete(69)
+    deleted_node_parent = deleted_node.get_parent()
+    deleted_node_left_child = deleted_node.get_left_child()
+    deleted_node_right_child = deleted_node.get_right_child()
     
-    with pytest.raises(KeyError): 
-        rooted_bst.delete(69)
+    full_bst.insert_successor(successor_node, deleted_node)
+    assert deleted_node_parent.get_right_child() == full_bst._get(94, full_bst.root)
 
-    with pytest.raises(KeyError): 
-        empty_bst.delete(69)
+    # LEFT OFF HERE
+    deleted_node = full_bst._get(73, full_bst.root)
+    successor_node = full_bst.find_successor(deleted_node)
+    full_bst.splice_successor(successor_node)
+    
+    deleted_node_parent = deleted_node.get_parent()
+    deleted_node_left_child = deleted_node.get_left_child()
+    deleted_node_right_child = deleted_node.get_right_child()
+    
+    full_bst.insert_successor(successor_node, deleted_node)
+    assert deleted_node_parent.get_right_child() == full_bst._get(74, full_bst.root)
 
-def test_delete_full_parent_node(non_empty_bst):
-    print(non_empty_bst.inorder_traversal(non_empty_bst.root))
-    non_empty_bst.delete(93)
-    print(non_empty_bst.inorder_traversal(non_empty_bst.root))
-    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {94: 'G'}]
 
-def test_delete_successor_with_right_child(non_empty_bst):
-    non_empty_bst[96] = 'New Node'
-    print(f'Items: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
-    non_empty_bst.delete(93)
-    print(f'Items after delete: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
-    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {73: 'F'}, {94: 'G'}, {96: 'New Node'}]
 
-def test_delete_successor_with_left_child(non_empty_bst):
-    non_empty_bst[80] = 'New Node 1'
-    non_empty_bst[75] = 'New Node 1'
-    print(f'Items: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
-    non_empty_bst.delete(73)
-    print(f'Items after delete: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
-    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {75: 'New Node 1'}, {80: 'New Node 1'}, {93: 'E'}, {94: 'G'}]
 
-def test_delete_successor_with_right_child_b(non_empty_bst):
-    non_empty_bst[80] = 'New Node 1'
-    non_empty_bst[75] = 'New Node 2'
-    non_empty_bst[76] = 'New Node 3'
-    non_empty_bst[71] = 'New Node 4'
-    print(f'Items: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')    
-    non_empty_bst.delete(73)    
-    print(f'Items after delete: {non_empty_bst.inorder_traversal(non_empty_bst.root)}')
-    assert non_empty_bst.inorder_traversal(non_empty_bst.root) == [{14: 'C'}, {23: 'D'}, {31: 'B'}, {70: 'A'}, {71: 'New Node 4'}, {75: 'New Node 2'}, {80: 'New Node 1'}, {93: 'E'}, {94: 'G'}]
 
 
 def test_bst_delitem(rooted_bst):
