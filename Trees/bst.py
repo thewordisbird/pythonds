@@ -91,7 +91,7 @@ class BST:
             return None
 
     def _get(self, key, currrent_node):
-        '''Recursively search tree for key and return node if found.'''
+        '''Recursively search tree for key and return node if found.'''        
         if currrent_node == None:
             return None
         elif currrent_node.key == key:
@@ -106,23 +106,32 @@ class BST:
 
     
     
-    # Needs testing
-    def __delitem__(self, key):
-        self.delete(key)
+    
     # -----------------------------------------------
-    def del_node(self, key):
+    def delete(self, key):
         node_to_remove = self._get(key, self.root)
         if node_to_remove is None:
             raise KeyError('Key not found in tree.')
         else:
             successor = self.find_successor(node_to_remove)
-            if successor is not None:
-                # Remove successor from tree
-                self.splice_successor(successor)
+            # Case 1. Node is a leaf or single root
+            if successor is None:
+                if node_to_remove.has_parent():
+                    if node_to_remove == node_to_remove.get_parent().get_left_child():
+                        node_to_remove.get_parent().set_left_child(None)
+                    else:
+                        node_tor_remove.get_parent().set_right_child(None)
+                else:
+                    self.root = None
             
-            # Insert the successor to the node_to_remove's location.
-            # This will handle all cases, so a successor of None is ok.
-            self.insert_successor(successor, node_to_remove)
+            # Case 2. Node has both children
+            elif node_to_remove.has_left_child() and node_to_remove.has_right_child():
+                self.splice(successor)
+                self.insert_successor(successor, node_to_remove)
+
+            # Case 3. Node has only one child
+            else:
+                self.splice(node_to_remove)
 
             self.size -= 1
 
@@ -155,189 +164,102 @@ class BST:
             
         return current_node
 
-    def splice_successor(self, successor_node):
+    def splice(self, node):
         '''Removes all refrences to the successor node and re-directs 
             relatives to the appropriate node'''
-        # Case 1. Successor node is a leaf.
-        if not successor_node.has_left_child() and not successor_node.has_right_child():
-            if successor_node == successor_node.get_parent().get_left_child():
-                successor_node.get_parent().set_left_child(None) 
+        # Case 1. node is a leaf.
+        if not node.has_left_child() and not node.has_right_child():
+            if node == node.get_parent().get_left_child():
+                node.get_parent().set_left_child(None) 
             else:
-                successor_node.get_parent().set_right_child(None)
+                node.get_parent().set_right_child(None)
 
-        # Case 2. Successor node has right child. Note: successor node can
+        # Case 2. node has right child. Note: successor node can
         #   never have a left child since the successor node is the min key
         #   value in a sub-tree
         else:
-            if successor_node == successor_node.get_parent().get_left_child():
-                successor_node.get_parent().set_left_child(successor_node.get_right_child()) 
+            if node.has_left_child():
+                if node == node.get_parent().get_left_child():
+                    node.get_parent().set_left_child(node.get_left_child())
+                else:
+                    node.get_parent().set_right_child(node.get_left_child())
+                
+                # set right child's parent reference:
+                node.get_left_child().set_parent(node.get_parent())
+
             else:
-                successor_node.get_parent().set_right_child(successor_node.get_right_child())
+                if node == node.get_parent().get_left_child():
+                    node.get_parent().set_left_child(node.get_right_child()) 
+                else:
+                    node.get_parent().set_right_child(node.get_right_child())
+                
+                # set right child's parent reference:
+                node.get_right_child().set_parent(node.get_parent())
             
-            # set right child's parent reference:    
-            successor_node.get_right_child().set_parent(successor_node.get_parent())
+            if node.has_left_child():
+                print('here')
+                node.get_left_child().set_parent(node.get_parent())
+            else:  
+                node.get_right_child().set_parent(node.get_parent())
                 
     def insert_successor(self, successor_node, deleted_node):
         '''replaces the successor node pointers with those of the deleted node.
             in effect de-refrenceing the deleted node and inserting the successor
-            node in its place'''
-        # Case 1. deleted_node is a leaf, successor is none. This could be a leaf
-        #   or a tree with only a root.
-        if successor_node is None:
-            # Case 1a. deleted_node is a leaf
-            if deleted_node.has_parent():                
-                if deleted_node == deleted_node.get_parent().get_left_child():
-                    deleted_node.get_parent().set_left_child(None)
-                else:
-                    deleted_node.get_parent().set_right_child(None)
+            node in its place. This is only used in when the deleted node has
+            both children'''
+        # # Case 1. deleted_node is a leaf, successor is none. This could be a leaf
+        # #   or a tree with only a root.
+        # if successor_node is None:
+        #     # Case 1a. deleted_node is a leaf
+        #     if deleted_node.has_parent():                
+        #         if deleted_node == deleted_node.get_parent().get_left_child():
+        #             deleted_node.get_parent().set_left_child(None)
+        #         else:
+        #             deleted_node.get_parent().set_right_child(None)
             
-            # Case 1b. deleted_node is a root with no children
-            else:
-                self.root = None
+        #     # Case 1b. deleted_node is a root with no children
+        #     else:
+        #         self.root = None
         
         # Case 2. deleted_node has both children
-        elif deleted_node.has_left_child() and deleted_node.has_right_child():
-            # Set parent node references
-            successor_node.set_parent(deleted_node.get_parent())
-            if deleted_node == deleted_node.get_parent().get_left_child():
-                deleted_node.get_parent().set_left_child(successor_node)
-            else:
-                deleted_node.get_parent().set_right_child(successor_node)
-            
-            # Set deleted_node's children's parent references to successor_node
-            successor_node.set_left_child(deleted_node.get_left_child())
-            deleted_node.get_left_child().set_parent(successor_node)
-
-            successor_node.set_right_child(deleted_node.get_right_child())
-            deleted_node.get_right_child().set_parent(successor_node)
-
-        # Case 3. deleted_node has only one child
+        #elif deleted_node.has_left_child() and deleted_node.has_right_child():
+        # Set parent node references
+        successor_node.set_parent(deleted_node.get_parent())
+        if deleted_node == deleted_node.get_parent().get_left_child():
+            deleted_node.get_parent().set_left_child(successor_node)
         else:
-            # Set parent node references
-            successor_node.set_parent(deleted_node.get_parent())
-            if deleted_node == deleted_node.get_parent().get_left_child():
-                deleted_node.get_parent().set_left_child(successor_node)
-            else:
-                deleted_node.get_parent().set_right_child(successor_node)
+            deleted_node.get_parent().set_right_child(successor_node)
+        
+        # Set deleted_node's children's parent references to successor_node
+        successor_node.set_left_child(deleted_node.get_left_child())
+        deleted_node.get_left_child().set_parent(successor_node)
 
-            # Set deleted_node's children's parent references to successor_node
-            if deleted_node.has_left_child():
-                successor_node.set_left_child(deleted_node.get_left_child())
-                successor_node.set_right_child(None)
-                deleted_node.get_left_child().set_parent(successor_node)
-            else:
-                successor_node.set_right_child(deleted_node.get_right_child())
-                successor_node.set_left_child(None)
-                deleted_node.get_right_child.set_parent(successor_node)
+        successor_node.set_right_child(deleted_node.get_right_child())
+        deleted_node.get_right_child().set_parent(successor_node)
+
+        # # Case 3. deleted_node has only one child
+        # else:
+        #     # Set parent node references
+        #     successor_node.set_parent(deleted_node.get_parent())
+        #     if deleted_node == deleted_node.get_parent().get_left_child():
+        #         deleted_node.get_parent().set_left_child(successor_node)
+        #     else:
+        #         deleted_node.get_parent().set_right_child(successor_node)
+
+        #     # Set deleted_node's children's parent references to successor_node
+        #     if deleted_node.has_left_child():
+        #         successor_node.set_left_child(deleted_node.get_left_child())
+        #         successor_node.set_right_child(None)
+        #         deleted_node.get_left_child().set_parent(successor_node)
+        #     else:
+        #         successor_node.set_right_child(deleted_node.get_right_child())
+        #         successor_node.set_left_child(None)
+        #         deleted_node.get_right_child().set_parent(successor_node)
 
     # ---------------------------------------------------------------------
-
     # Needs testing
-    def delete(self, key):
-        if self.size > 1:
-            node_to_remove = self._get(key, self.root)
-            if node_to_remove:
-                self.remove(node_to_remove)
-                self.size -= 1
-            else:
-                raise KeyError('Error, key not found in tree.')
-        elif self.size == 1 and self.root.key == key:
-            self.root = None
-            self.size -= 1
-        else:
-            raise KeyError('Error, key not found in tree.')
-
-    
-    # Needs testing
-    def remove(self, node):
-        
-        if not node.has_left_child() and not node.has_right_child():
-            # Node is a leaf node
-            if node == node.get_parent().get_left_child():
-                node.get_parent().set_left_child(None)
-            else:
-                node.get_parent().set_right_child(None)
-        
-        elif node.has_left_child() and node.has_right_child():
-            # Node has both children
-            
-            successor = self.find_successor(node)
-            print(f'successor: {successor.key}')
-            
-            # Note: the successor will be the minimum node in the right sub tree. 
-            # Because it's the minimum it will have no left branches
-            # so we need to check to see if the successor is a leaf or not, modify the
-            # child pointers if so, and replace the node to be deleted with the successor
-
-            # Is successor a leaf
-            if not successor.has_left_child() and not successor.has_right_child():
-                if successor == successor.get_parent().get_left_child():
-                    successor.get_parent().set_left_child(None)
-                else:
-                    successor.get_parent().set_right_child(None)
-
-            # Successor is not a leaf and has a right child
-            else:
-                if successor == successor.get_parent().get_left_child():
-                    successor.get_parent().set_left_child(successor.get_left_child())
-                else:
-                    successor.get_parent().set_right_child(successor.get_right_child())
-            
-            # Once the successor has been splice from its original location, it can
-            # replace the node to be deleted. We need to update the node to be deleted's 
-            # right and left children to point to the successor as parent and the successor
-            # to point to them as children
-            
-            # Set successor new left child
-            
-            # The below statements will update the successor with the node's references
-                         
-            if node.has_parent():
-                successor.set_parent(node.get_parent())
-                if node == node.get_parent().get_left_child():
-                    node.get_parent().set_left_child(successor)
-                else:
-                    node.get_parent().set_right_child(successor)
-            else:
-                successor.set_parent(None)
-                self.root = successor
-
-            if node.has_left_child():
-                successor.set_left_child(node.get_left_child())
-                node.get_left_child().set_parent(successor)
-            else:
-                successor.set_left_child(None)
-            
-            if node.has_right_child():
-                successor.set_right_child(node.get_right_child())
-                node.get_right_child().set_parent(successor)
-            else:
-                successor.set_right_child(None)
-
-        else:
-            # Node has only one child
-            if node.has_left_child():
-                if node.has_parent():
-                    if node == node.get_parent().get_left_child():
-                        node.get_left_child().set_parent(node.get_parent())
-                        node.get_parent().set_left_child(node.get_left_child())
-                    elif node == node.get_parent().get_right_child():
-                        node.get_left_child().set_parent(node.get_parent())
-                        node.get_parent().set_right_child(node.get_left_child())
-                else:
-                    node.get_left_child().set_parent(None)
-                    self.root = node.get_left_child()
-            else:
-                if node.has_parent():
-                    if node == node.get_parent().get_left_child():
-                        node.get_right_child().set_parent(node.get_parent())
-                        node.get_parent().set_left_child(node.get_right_child())
-                    elif node == node.get_parent().get_right_child():
-                        node.get_right_child().set_parent(node.get_parent())
-                        node.get_parent().set_right_child(node.get_right_child())
-                else:
-                    node.get_right_child().set_parent(None)
-                    self.root = node.get_right_child()
+    def __delitem__(self, key):
+        self.delete(key)
 
     def inorder_traversal(self, node):
         return self.inorder_traversal(node.get_left_child()) + \
@@ -346,24 +268,6 @@ class BST:
                     if node else []
 
         
-if __name__ == "__main__":
-    print('test')
-    bst = BST()
-    bst[70] = 'A'
-    bst[31] = 'B'
-    bst[14] = 'C'
-    bst[23] = 'D'
-    bst[93] = 'E'
-    bst[94] = 'F'
-    bst[96] = 'G'
-    bst[73] = 'H'
-    bst[80] = 'I'
-    bst[75] = 'J'
-    bst[76] = 'K'
-    bst[71] = 'L'
-    print(bst.size)
-    bst.delete(73)
-    print(bst.size)
         
 
 
