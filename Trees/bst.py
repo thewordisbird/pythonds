@@ -104,10 +104,6 @@ class BST:
     def __getitem__(self, key):
         return self.get(key)
 
-    
-    
-    
-    # -----------------------------------------------
     def delete(self, key):
         node_to_remove = self._get(key, self.root)
         if node_to_remove is None:
@@ -120,7 +116,7 @@ class BST:
                     if node_to_remove == node_to_remove.get_parent().get_left_child():
                         node_to_remove.get_parent().set_left_child(None)
                     else:
-                        node_tor_remove.get_parent().set_right_child(None)
+                        node_to_remove.get_parent().set_right_child(None)
                 else:
                     self.root = None
             
@@ -207,22 +203,7 @@ class BST:
             in effect de-refrenceing the deleted node and inserting the successor
             node in its place. This is only used in when the deleted node has
             both children'''
-        # # Case 1. deleted_node is a leaf, successor is none. This could be a leaf
-        # #   or a tree with only a root.
-        # if successor_node is None:
-        #     # Case 1a. deleted_node is a leaf
-        #     if deleted_node.has_parent():                
-        #         if deleted_node == deleted_node.get_parent().get_left_child():
-        #             deleted_node.get_parent().set_left_child(None)
-        #         else:
-        #             deleted_node.get_parent().set_right_child(None)
-            
-        #     # Case 1b. deleted_node is a root with no children
-        #     else:
-        #         self.root = None
-        
         # Case 2. deleted_node has both children
-        #elif deleted_node.has_left_child() and deleted_node.has_right_child():
         # Set parent node references
         successor_node.set_parent(deleted_node.get_parent())
         if deleted_node == deleted_node.get_parent().get_left_child():
@@ -237,27 +218,6 @@ class BST:
         successor_node.set_right_child(deleted_node.get_right_child())
         deleted_node.get_right_child().set_parent(successor_node)
 
-        # # Case 3. deleted_node has only one child
-        # else:
-        #     # Set parent node references
-        #     successor_node.set_parent(deleted_node.get_parent())
-        #     if deleted_node == deleted_node.get_parent().get_left_child():
-        #         deleted_node.get_parent().set_left_child(successor_node)
-        #     else:
-        #         deleted_node.get_parent().set_right_child(successor_node)
-
-        #     # Set deleted_node's children's parent references to successor_node
-        #     if deleted_node.has_left_child():
-        #         successor_node.set_left_child(deleted_node.get_left_child())
-        #         successor_node.set_right_child(None)
-        #         deleted_node.get_left_child().set_parent(successor_node)
-        #     else:
-        #         successor_node.set_right_child(deleted_node.get_right_child())
-        #         successor_node.set_left_child(None)
-        #         deleted_node.get_right_child().set_parent(successor_node)
-
-    # ---------------------------------------------------------------------
-    # Needs testing
     def __delitem__(self, key):
         self.delete(key)
 

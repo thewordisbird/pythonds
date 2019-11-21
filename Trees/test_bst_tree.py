@@ -430,19 +430,76 @@ def test_delete_single_root(rooted_bst):
 def test_delete_leaf(full_bst):
     '''Test delete method of BST class when removing a leaf node'''
     # GIVEN a bst 
-    # WHEN the delete method is called passing in a valid leaf node
+    # WHEN the delete method is called passing in a valid leaf node key
     # THEN the leafs parent's respective child will be set to None and
     #   the size of the bst will decrease by 1
     
-    print(full_bst.root.key)
+    bst_size = full_bst.size
     leaf_node = full_bst._get(19, full_bst.root)
     leaf_node_parent = leaf_node.get_parent()
-    full_bst.delete(leaf_node)
+    full_bst.delete(leaf_node.key)
     assert leaf_node_parent.get_left_child() == None
     assert full_bst.size == bst_size - 1
 
+    bst_size = full_bst.size
+    leaf_node = full_bst._get(76, full_bst.root)
+    leaf_node_parent = leaf_node.get_parent()
+    full_bst.delete(leaf_node.key)
+    assert leaf_node_parent.get_right_child() == None
+    assert full_bst.size == bst_size - 1
 
+def test_delete_node_with_both_children(full_bst):
+    '''Test delete method of BST class when removing a node with
+        two children'''
+    # GIVEN a bst
+    # WHEN the delete method is called passing in a valid node key that has 
+    #   two children
+    # THEN the node will be removed and replaced by it's successor node
 
+    bst_size = full_bst.size
+    node = full_bst._get(73, full_bst.root)
+    node_parent = node.get_parent()
+    node_left_child = node.get_left_child()
+    node_right_child = node.get_right_child()
+    node_successor = full_bst.find_successor(node)
+
+    full_bst.delete(node.key)
+    assert node_successor.get_left_child() == node_left_child
+    assert node_successor.get_right_child() == node_right_child
+    assert node_successor.get_parent() == node_parent
+    assert node_left_child.get_parent() == node_successor
+    assert node_right_child.get_parent() == node_successor
+    assert node_parent.get_left_child() == node_successor
+    assert full_bst.size == bst_size - 1
+
+def test_delete_node_with_only_one_child(full_bst):
+    '''Test delete method of BST class when removing a node with
+        only one child'''
+    # GIVEN a bst
+    # WHEN the delete method is called passing in a valid node key that has
+    #   two children
+    # THEN the node will be removed and the parent and child spliced together
+    bst_size = full_bst.size
+    node = full_bst._get(23, full_bst.root)
+    node_parent = node.get_parent()
+    node_left_child = node.get_left_child()
+
+    full_bst.delete(node.key)
+    assert node_parent.get_right_child() == node_left_child
+    assert node_left_child.get_parent() == node_parent
+    assert full_bst.size == bst_size - 1
+
+def test_bst_delitem(full_bst):
+    '''Test __delitem__ over ride'''
+    bst_size = full_bst.size
+    node = full_bst._get(23, full_bst.root)
+    node_parent = node.get_parent()
+    node_left_child = node.get_left_child()
+
+    del full_bst[node.key]
+    assert node_parent.get_right_child() == node_left_child
+    assert node_left_child.get_parent() == node_parent
+    assert full_bst.size == bst_size - 1
 
 
 
