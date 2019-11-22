@@ -57,23 +57,23 @@ class BST:
 
     def put(self, key, value):
         if self.root:
-            self.__put(key, value, self.root)
+            self._put(key, value, self.root)
         else:
             self.root = Node(key, value)
         self.size += 1
 
-    def __put(self, key, value, current_node):
+    def _put(self, key, value, current_node):
         '''recursevely search for entry point and insert at correct location.'''       
         if key < current_node.key:
             # Traverse left branches checking that key is less than current_node.key
             if current_node.has_left_child():
-                self.__put(key, value, current_node.get_left_child())
+                self._put(key, value, current_node.get_left_child())
             else:
                 current_node.set_left_child(Node(key, value, parent=current_node))
         elif key > current_node.key:
             # Traverse right branches checking that key is greater than current_node
             if current_node.has_right_child():
-                self.__put(key,value, current_node.get_right_child())
+                self._put(key,value, current_node.get_right_child())
             else:
                 current_node.set_right_child(Node(key, value, parent=current_node)) 
 

@@ -501,20 +501,3 @@ def test_bst_delitem(full_bst):
     assert node_left_child.get_parent() == node_parent
     assert full_bst.size == bst_size - 1
 
-
-
-
-
-
-
-
-
-#def test_bst_delitem(rooted_bst):
-#    del rooted_bst[35]
-#    assert rooted_bst.root == None
-
-
-
-
-    
-
