@@ -67,16 +67,16 @@ class BST:
                 self.__put(key, value, current_node.get_left_child())
             else:
                 current_node.set_left_child(Node(key, value, parent=current_node))
-                self.update_balance_factor(current_node.get_left_child())
+                self._update_balance_factor(current_node.get_left_child())
         elif key > current_node.key:
             # Traverse right branches checking that key is greater than current_node
             if current_node.has_right_child():
                 self.__put(key,value, current_node.get_right_child())
             else:
                 current_node.set_right_child(Node(key, value, parent=current_node)) 
-                self.update_balance_factor(current_node.get_right_child())
+                self._update_balance_factor(current_node.get_right_child())
 
-    def update_balance_factor(self, node):
+    def _update_balance_factor(self, node):
         '''Recursively work from node to root updating balance factor. Base case when
             bf at node is -1>x>1 or 0'''
         if node.get_balance_factor() > 1 or node.get_balance_factor() < -1:
@@ -286,7 +286,48 @@ def left_rotation(node):
 
 def right_rotation(node):
     '''Node rebalancing for left heavy tree'''
-    pass
+    # Step 1. Store new node (node's left child) to a temp variable
+    new_root = node.get_left_child()
+  
+    # Step 2. Set left child refrences for node. If the new node
+    #   has a right child, it becomes the left child of node, else
+    #   set node.left_child to None
+    if new_root.has_right_child():
+        node.set_left_child(new_root.get_right_child())
+        new_root.get_right_child().set_parent(node)
+    else:
+        node.set_left_child(None)
 
-def balance_factor(root_node):
-    pass
+    # Step 3. Set subtree parent
+    new_root.set_parent(node.get_parent())
+    if node.isroot():
+        self.root = new_root
+    else:
+        if node == node.get_parent().get_left_child():
+            parent.set_left_child(new_root)
+        else:
+            parent.set_right_child(new_root)
+    
+    # Step 4. Set node as right child to new_root
+    node.set_parent(new_root)
+    new_root.set_right_child(node)
+
+    # Step 5. Update balance factors
+    node.balance_factor = node.balance_factor + 1 - min(new_root.balance_factor, 0)
+    new_root.balance_factor = new_root.balance_factor + 1 + max(node.balance_factor, 0)
+
+def rebalance(self, node):
+    if node.get_balance_factor() < 0:
+        if node.get_right_child().get_balance_factor() > 0:
+            self.right_rotation(node.get_right_child())
+            self.left_rotation(node)
+        else:
+            self.left_rotation(node)
+    elif node.get_balance_factor > 0:
+        if node.get_left_child().get_balance_factor() < 0:
+            self.left_rotation(node.get_left_child())
+            self.right_rotation(node)
+        else:
+            self.right_rotation(node)
+
+
