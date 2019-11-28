@@ -45,6 +45,15 @@ class Graph:
         self.adj_list[from_node_key][to_node_key] = weight
         self.adj_list[to_node_key][from_node_key] = weight
 
+    def add_multi_edge_undirected(self, from_node_key, **weighted_to_nodes):
+        if from_node_key not in self.adj_list:
+            self.add_node(from_node_key)
+        for k,w in weighted_to_nodes.items():
+            if k not in self.adj_list:
+                self.add_node(k)
+            self.adj_list[from_node_key][k] = w
+            self.adj_list[k][from_node_key] = w
+
     def get_nodes(self):
         return self.adj_list.keys()
 
@@ -60,11 +69,29 @@ class Graph:
             return in_path
 
         while to_explore:
-            node = deque.popleft()
+            node = to_explore.popleft()
             for neighbor in self.adj_list[node]:
                 if neighbor not in in_path:
                     in_path[neighbor] = node
-                    to_explore.append(neighbor)
+                    if neighbor == target_node_key:
+                        return in_path
+                    else:
+                        to_explore.append(neighbor)
+        return in_path
+
+    
+    def shortest_path(self,path, start_node_key, target_node_key):
+        current_node_key = target_node_key
+        shortest_path = []
+
+        while current_node_key != start_node_key:
+            shortest_path.append(current_node_key)
+            current_node_key = path[current_node_key]
+        
+        shortest_path.append(start_node_key)
+        return shortest_path
+
+
 
     def dfs(self, start_node_key, target_node_key):
         pass
@@ -72,7 +99,21 @@ class Graph:
 
 if __name__ == '__main__':
     g = Graph()
-    g.add_node('fool')
-    g.add_node('foul')
-    g.add_edge_undirected('fool', 'foul')
-    print(g.adj_list)
+    #g.add_node('fool')
+    #g.add_node('foul')
+    #g.add_edge_undirected('fool', 'foul')
+    #print(g.adj_list)
+
+    g.add_multi_edge_undirected('fool', foul = 0, foil = 0, cool = 0, pool = 0)
+    g.add_edge_undirected('foul', 'foil')
+    g.add_edge_undirected('foil', 'fail')
+    g.add_edge_undirected('fail', 'fall')
+    g.add_edge_undirected('fall', 'pall')
+    g.add_multi_edge_undirected('pall', poll = 0, pale = 0)
+    g.add_multi_edge_undirected('poll', pool = 0, pole = 0)
+    g.add_multi_edge_undirected('pole', pale = 0, pope = 0)
+    g.add_multi_edge_undirected('pale', sale = 0, page = 0)
+    g.add_multi_edge_undirected('sage', sale = 0, page = 0)
+    print(g.shortest_path(g.bfs('fool', 'sage'), 'fool', 'sage'))
+    #print(g.adj_list)
+
