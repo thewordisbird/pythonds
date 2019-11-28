@@ -5,8 +5,8 @@ class Vertex:
         self.id = key
         self.connected_to = {}
     
-    def add_connection(self, connected_node, weight=0):
-        self.connected_to[connected_node] = weight
+    def add_neighbor(self, neighbor, weight=0):
+        self.connected_to[neighbor] = weight
 
     def __str__(self):
         return str(self.id) + ' connected to: ' + str([x.id for x in self.connected_to])
@@ -17,7 +17,7 @@ class Vertex:
     def get_id(self):
         return self.id
 
-    def get_weight(self, connected_node):
+    def get_weight(self, neighbor):
         return self.connected_to[connected_node]
 
 
@@ -46,7 +46,7 @@ class Graph:
             self.add_vertex(from_vertex_key)
         if to_vertex_key not in self.vertex_list:
             self.add_vertex(to_vertex_key)
-        self.vertex_list[from_vertex_key].add_connection(self.vertex_list[to_vertex_key], weight)
+        self.vertex_list[from_vertex_key].add_neighbor(self.vertex_list[to_vertex_key], weight)
 
     def get_vertices(self):
         return self.vertex_list.keys()
