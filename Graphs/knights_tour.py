@@ -36,18 +36,46 @@ def legal_coord(component, board_size):
         return True
     return False
 
-def knights_tour(graph, depth=0, visited=[], node, limit):
-    visted.append(node)
-    if depth < limit:
-        neighbors = graph.adj_list[node]
-        for neighbor in neighbors:
-            if neighbors not in visited:
-                return knights_tour(graph, depth + 1, visited, neighbor, limit)
-    return 
-        
+# def knights_tour(graph, depth=0, visited=[], node, limit):
+#     visted.append(node)
+#     if depth < limit:
+#         neighbors = graph.adj_list[node]
+#         for neighbor in neighbors:
+#             if neighbors not in visited:
+#                 return knights_tour(graph, depth + 1, visited, neighbor, limit)
+     
+# def knights_tour(graph, start_node):
+#     print(start_node)
+#     visited = []
+#     return _knights_tour(graph, start_node, visited)
+
+def knights_tour(graph, node, visited=[]):
+    visited.append(node)
+    if len(visited) == graph.get_size() :
+        finished = True
+        return visited
+    if len(visited) < graph.get_size():
+        finished = False
+        for neighbor in graph.adj_list[node]:
+            if neighbor not in visited:
+                finished = knights_tour(graph, neighbor, visited)
+        if not finished:
+            visited.pop()
+    return finished
+
+
 
 
 if __name__ == "__main__":
     # build knight graph
-    kg = board_to_knight_graph(8)
-    print(len(kg.adj_list))
+    kg = board_to_knight_graph(5)
+    #print(len(kg.adj_list))
+    #print(kg.adj_list)
+    # for i in range(25):
+    #     kt = knights_tour(kg, i, [])
+    #     print(kt)
+    
+    #print(knights_tour(kg, 4))
+    print(knights_tour(kg, 1))
+    # for i in range(25):
+    #     print(f' \{i} : {kg.adj_list[i]}')

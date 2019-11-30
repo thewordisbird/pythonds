@@ -24,6 +24,9 @@ class Graph:
         #   Node_n:{neighbor_1: edge_weight, neighbor_2: edge_weight, ...}
         # }
         self.adj_list = {}
+
+    def get_size(self):
+        return len(self.adj_list)
     
     def add_node(self, node_key):
         self.adj_list[node_key] = {}
@@ -44,6 +47,14 @@ class Graph:
             self.add_node(to_node_key)
         self.adj_list[from_node_key][to_node_key] = weight
         self.adj_list[to_node_key][from_node_key] = weight
+
+    def add_edge_directed(self, from_node_key, to_node_key, weight=0):
+        if from_node_key not in self.adj_list:
+            self.add_node(from_node_key)
+        if to_node_key not in self.adj_list:
+            self.add_node(to_node_key)
+        self.adj_list[from_node_key][to_node_key] = weight
+        
 
     def add_multi_edge_undirected(self, from_node_key, **weighted_to_nodes):
         if from_node_key not in self.adj_list:
@@ -104,7 +115,7 @@ class Graph:
         for neighbor in self.adj_list[source_node]:
             
             if self.dfs(neighbor, destination_node, visited):
-                return True
+                return Trueg
         
         return False
 
