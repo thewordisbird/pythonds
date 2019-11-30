@@ -36,6 +36,16 @@ def legal_coord(component, board_size):
         return True
     return False
 
+def knights_tour(graph, depth=0, visited=[], node, limit):
+    visted.append(node)
+    if depth < limit:
+        neighbors = graph.adj_list[node]
+        for neighbor in neighbors:
+            if neighbors not in visited:
+                return knights_tour(graph, depth + 1, visited, neighbor, limit)
+    return 
+        
+
 
 if __name__ == "__main__":
     # build knight graph

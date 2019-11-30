@@ -93,9 +93,24 @@ class Graph:
 
 
 
-    def dfs(self, start_node_key, target_node_key):
-        pass
+    def has_path_dfs(self, source_node, destination_node, visited={}):
+        if source_node in visited:
+            return False
 
+        visited[source_node] = True
+        if source_node == destination_node:
+            return True
+        
+        for neighbor in self.adj_list[source_node]:
+            
+            if self.dfs(neighbor, destination_node, visited):
+                return True
+        
+        return False
+
+    def dfs_path(self, source_node, destination_node, visited={}):
+        if source_node in visited:
+            del visited
 
 if __name__ == '__main__':
     g = Graph()
@@ -115,5 +130,6 @@ if __name__ == '__main__':
     g.add_multi_edge_undirected('pale', sale = 0, page = 0)
     g.add_multi_edge_undirected('sage', sale = 0, page = 0)
     print(g.shortest_path(g.bfs('fool', 'sage'), 'fool', 'sage'))
+    print(g.dfs('pope', 'sage'))
     #print(g.adj_list)
 
