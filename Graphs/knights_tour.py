@@ -50,10 +50,11 @@ def legal_coord(component, board_size):
 #     return _knights_tour(graph, start_node, visited)
 
 def knights_tour(graph, node, visited=[]):
+    
     visited.append(node)
     if len(visited) == graph.get_size() :
         finished = True
-        return visited
+        return finished
     if len(visited) < graph.get_size():
         finished = False
         for neighbor in graph.adj_list[node]:
@@ -63,19 +64,38 @@ def knights_tour(graph, node, visited=[]):
             visited.pop()
     return finished
 
+def kt(grap, node, visited=[]):
+    # Record source node as visited
+    visited.append(node)
+  
+    if len(visited) < grap.get_size():
+        # Set finished trigger to False, since the puzzel is only finished once all nodes
+        # have been visted
+        finished = False
+        # Try moving to all neighbors
+        for neighbor in grap.adj_list[node]:
+            # Check if neighbor node has been visted
+            if neighbor not in visited:
+                finished = kt(grap, neighbor, visited)
+        if not finished:
+            visited.pop()
+    
+    else:
+        return True
+    
+    if finished == True:
+        return visited
+    else:
+        return finished
+
+
 
 
 
 if __name__ == "__main__":
     # build knight graph
-    kg = board_to_knight_graph(5)
-    #print(len(kg.adj_list))
-    #print(kg.adj_list)
-    # for i in range(25):
-    #     kt = knights_tour(kg, i, [])
-    #     print(kt)
-    
-    #print(knights_tour(kg, 4))
-    print(knights_tour(kg, 1))
-    # for i in range(25):
-    #     print(f' \{i} : {kg.adj_list[i]}')
+    kg = board_to_knight_graph(6)
+
+    k = kt(kg, 23)
+    print(k)
+   
