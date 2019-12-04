@@ -36,47 +36,58 @@ def legal_coord(component, board_size):
         return True
     return False
 
-# def knights_tour(graph, depth=0, visited=[], node, limit):
-#     visted.append(node)
-#     if depth < limit:
-#         neighbors = graph.adj_list[node]
-#         for neighbor in neighbors:
-#             if neighbors not in visited:
-#                 return knights_tour(graph, depth + 1, visited, neighbor, limit)
-     
-# def knights_tour(graph, start_node):
-#     print(start_node)
-#     visited = []
-#     return _knights_tour(graph, start_node, visited)
+def order_by_avail(graph, node, visited):
+    res_list = []
+    for neighbor in graph.adj_list[node]:
+        if neighbor not in visited:
+            count = 0
+            for _ in graph.adj_list[neighbor]:
+                if _ not in visited:
+                    count += 1
+            res_list.append((count, neighbor))
+    res_list.sort(key=lambda x: x[0])
+    return [y[1] for y in res_list]
 
-def knights_tour(graph, node, visited=[]):
-    
-    visited.append(node)
-    if len(visited) == graph.get_size() :
-        finished = True
-        return finished
-    if len(visited) < graph.get_size():
-        finished = False
-        for neighbor in graph.adj_list[node]:
-            if neighbor not in visited:
-                finished = knights_tour(graph, neighbor, visited)
-        if not finished:
-            visited.pop()
-    return finished
-
-def kt(grap, node, visited=[]):
+def kt_2(graph, node, visited=[]):
     # Record source node as visited
     visited.append(node)
   
-    if len(visited) < grap.get_size():
+    if len(visited) < graph.get_size():
         # Set finished trigger to False, since the puzzel is only finished once all nodes
         # have been visted
         finished = False
         # Try moving to all neighbors
-        for neighbor in grap.adj_list[node]:
+        neighbors = order_by_avail(graph, node,visited)
+        for neighbor in neighbors:
             # Check if neighbor node has been visted
             if neighbor not in visited:
-                finished = kt(grap, neighbor, visited)
+                finished = kt(graph, neighbor, visited)
+        if not finished:
+            visited.pop()
+    
+    else:
+        return True
+    
+    if finished == True:
+        return visited
+    else:
+        return finished
+        
+
+
+def kt(graph, node, visited=[]):
+    # Record source node as visited
+    visited.append(node)
+  
+    if len(visited) < graph.get_size():
+        # Set finished trigger to False, since the puzzel is only finished once all nodes
+        # have been visted
+        finished = False
+        # Try moving to all neighbors
+        for neighbor in graph.adj_list[node]:
+            # Check if neighbor node has been visted
+            if neighbor not in visited:
+                finished = kt(graph, neighbor, visited)
         if not finished:
             visited.pop()
     
@@ -89,13 +100,10 @@ def kt(grap, node, visited=[]):
         return finished
 
 
-
-
-
 if __name__ == "__main__":
     # build knight graph
-    kg = board_to_knight_graph(6)
+    kg = board_to_knight_graph(8)
 
-    k = kt(kg, 23)
+    k = kt_2(kg, 23)
     print(k)
    
