@@ -24,6 +24,7 @@ class Graph:
         #   Node_n:{neighbor_1: edge_weight, neighbor_2: edge_weight, ...}
         # }
         self.adj_list = {}
+        self.time = 0
 
     def get_size(self):
         return len(self.adj_list)
@@ -115,7 +116,7 @@ class Graph:
         for neighbor in self.adj_list[source_node]:
             
             if self.dfs(neighbor, destination_node, visited):
-                return Trueg
+                return True
         
         return False
 
