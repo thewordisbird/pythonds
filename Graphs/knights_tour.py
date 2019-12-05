@@ -48,7 +48,7 @@ def order_by_avail(graph, node, visited):
     res_list.sort(key=lambda x: x[0])
     return [y[1] for y in res_list]
 
-def kt_2(graph, node, visited=[]):
+def kt(graph, node, visited=[]):
     # Record source node as visited
     visited.append(node)
   
@@ -57,7 +57,7 @@ def kt_2(graph, node, visited=[]):
         # have been visted
         finished = False
         # Try moving to all neighbors
-        neighbors = order_by_avail(graph, node,visited)
+        neighbors = sorted_neighbors(graph, node)
         for neighbor in neighbors:
             # Check if neighbor node has been visted
             if neighbor not in visited:
@@ -72,10 +72,8 @@ def kt_2(graph, node, visited=[]):
         return visited
     else:
         return finished
-        
 
-
-def kt(graph, node, visited=[]):
+def kt_2(graph, node, visited=[]):
     # Record source node as visited
     visited.append(node)
   
@@ -99,11 +97,18 @@ def kt(graph, node, visited=[]):
     else:
         return finished
 
+def sorted_neighbors(graph, node):
+    node_count = {n:len(graph.adj_list[n]) for n in graph.adj_list}
+    return sorted(graph.adj_list[node], key=lambda x: node_count[x])
+
 
 if __name__ == "__main__":
     # build knight graph
-    kg = board_to_knight_graph(8)
+    kg = board_to_knight_graph(5)
+    # Using Warnsdorffs Heuristic
+    print(kt(kg, 2))
 
-    k = kt_2(kg, 23)
-    print(k)
-   
+    # No Heuristic
+    print(kt_2(kg, 2))
+    #print(kg.adj_list[17].keys())
+    #print(sorted_neighbors(kg, 17))
