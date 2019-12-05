@@ -106,9 +106,9 @@ if __name__ == "__main__":
     # build knight graph
     kg = board_to_knight_graph(5)
     # Using Warnsdorffs Heuristic
-    print(kt(kg, 2))
+    print(kt(kg, 6))
 
     # No Heuristic
-    print(kt_2(kg, 2))
+    #print(kt_2(kg, 2))
     #print(kg.adj_list[17].keys())
     #print(sorted_neighbors(kg, 17))
