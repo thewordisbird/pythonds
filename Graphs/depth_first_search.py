@@ -20,7 +20,7 @@ class DFSResult:
 
 def dfs(g):
     result = DFSResult()
-    for vertex in g.adj_list:
+    for vertex in g:
         if vertex not in result.parent:
             dfs_visit(g, vertex, result)
     return result
@@ -34,7 +34,7 @@ def dfs_visit(g, v, result, parent=None):
     # Classify Edges
     if parent:
         result.edges[(parent, v)] = 'Tree'
-    for n in g.adj_list[v]:
+    for n in g[v]:
         if n not in result.parent:
             dfs_visit(g, n, result, v)
         elif n not in result.finish_time:
@@ -49,6 +49,20 @@ def dfs_visit(g, v, result, parent=None):
     result.order.append(v)
 
 def topological_sort(g):
-    dfs_result = DFSResult()
+    dfs_result = dfs(g)
     dfs_result.order.reverse()
     return dfs_result.order
+
+
+if __name__ == '__main__':
+    graph_DAG = { 'A': {'B', 'G'}, 'B': {'C'}, 'C':{'D', 'F'}, 'D':{'E', 'F'}, 'E': {}, 'F': {}, 'G': {'C'}}
+    print(dfs(graph_DAG).edges)
+    print(topological_sort(graph_DAG))
+
+    # Directed Cyclic Graph
+    graph_DC = { 'A': {'B', 'C', 'G'}, 'B': {'C'}, 'C':{'D', 'F', 'A'}, 'D':{'E', 'F'}, 'E': {}, 'F': {}, 'G': {'C'}}
+    print(dfs(graph_DC).edges)
+
+    # Non-directed Cyclic Graph
+    graph_NDC = { 'A': {'B', 'C', 'G'}, 'B': {'A', 'C'}, 'C':{'D', 'F', 'A', 'G'}, 'D':{'C', 'E', 'F'}, 'E': {'D'}, 'F': {'D'}, 'G': {'A', 'C'}}
+    print(dfs(graph_NDC).edges)
