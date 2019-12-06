@@ -15,6 +15,7 @@ class DFSResult:
         self.finish_time = {}
         self.order = []
         self.tree_sets = {}
+        self.tree_count = 0
         self.t = 0
 
 def dfs(graph):
@@ -26,6 +27,11 @@ def dfs(graph):
 
 
 def dfs_visit(graph, node, result, parent=None):
+    if parent == None:
+        # A node with no parent is the root of a New Tree
+        result.tree_count += 1
+        result.tree_sets[result.tree_count] = {node}
+
     result.parents[node] = parent
     result.t += 1
     result.start_time[node] = result.t
@@ -39,6 +45,8 @@ def dfs_visit(graph, node, result, parent=None):
     result.t += 1
     result.finish_time[node] = result.t
     result.order.append(node)
+    if node not in result.tree_sets[result.tree_count]:
+        result.tree_sets[result.tree_count].add(node)
 
 def transform_graph(graph):
     # Set keys with empty neighbor sets in transform
@@ -52,14 +60,15 @@ def transform_graph(graph):
 
 def scc(graph_transform, t_order):
     result = DFSResult()
-    trees = []   
     while t_order:
-        node = t_order.pop()
-        tree = [node]
+        node = t_order.pop()        
         if node not in result.parents:
+            tree = [node]
             dfs_visit(graph_transform, node, result)
-        else:
-            tree.append(node)
+    
+    return result.tree_sets
+
+    
 
 
 
@@ -73,5 +82,10 @@ if __name__ == '__main__':
     # Test dfs:
     #r = dfs(graph)
     #print(r.order)
-    print(graph)
-    print(transform_graph(graph))
+    #print(graph)
+    #print(transform_graph(graph))
+    r_1 = dfs(graph)
+    gt = transform_graph(graph)
+    r_2 = scc(gt, r_1.order)
+    print(r_2)
+    
