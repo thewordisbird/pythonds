@@ -14,6 +14,7 @@ class DFSResult:
         self.start_time = {}
         self.finish_time = {}
         self.order = []
+        self.tree_sets = {}
         self.t = 0
 
 def dfs(graph):
@@ -40,7 +41,25 @@ def dfs_visit(graph, node, result, parent=None):
     result.order.append(node)
 
 def transform_graph(graph):
-    pass
+    # Set keys with empty neighbor sets in transform
+    gt = {n:set() for n in graph.keys()}
+
+    for node in graph:
+        for neighbor in graph[node]:
+            gt[neighbor].add(node)
+    
+    return gt
+
+def scc(graph_transform, t_order):
+    result = DFSResult()
+    trees = []   
+    while t_order:
+        node = t_order.pop()
+        tree = [node]
+        if node not in result.parents:
+            dfs_visit(graph_transform, node, result)
+        else:
+            tree.append(node)
 
 
 
@@ -52,5 +71,7 @@ if __name__ == '__main__':
             }   
 
     # Test dfs:
-    r = dfs(graph)
-    print(r.order)
+    #r = dfs(graph)
+    #print(r.order)
+    print(graph)
+    print(transform_graph(graph))
