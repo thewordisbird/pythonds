@@ -42,10 +42,22 @@ def test_build_from_graph(empty_pqm, graph):
     empty_pqm.build_from_graph(graph)
     assert len(empty_pqm.heap_list) == 6
 
+def test_swap(loaded_pqm):
+    assert loaded_pqm.heap_list[0][0] == 'u' 
+    assert loaded_pqm.node_map['u'] == 0
+    assert loaded_pqm.heap_list[5][0] == 'z'
+    assert loaded_pqm.node_map['z'] == 5
+    loaded_pqm.swap(0, 5)
+    assert loaded_pqm.heap_list[0][0] == 'z' 
+    assert loaded_pqm.node_map['z'] == 0
+    assert loaded_pqm.heap_list[5][0] == 'u'
+    assert loaded_pqm.node_map['u'] == 5
+
 # NEED TO FINSIH BUILDING TEST TO MAKE SURE NODE MAP IS UPDATED CORRECTLY
 def test_heapify_up_from_bottom(loaded_pqm):
     loaded_pqm.heap_list.append(('t', 3))
     loaded_pqm.node_map['t'] = len(loaded_pqm.heap_list) - 1
+    print(loaded_pqm.node_map)
     assert loaded_pqm.heap_list[-1] == ('t', 3)
     loaded_pqm.heapify_up()
     position = loaded_pqm.node_map['t']
@@ -53,13 +65,23 @@ def test_heapify_up_from_bottom(loaded_pqm):
 
 def test_heapify_up_from_mid(loaded_pqm):
     loaded_pqm.heap_list.insert(3, ('t', 3))
+    
     for k,v in loaded_pqm.node_map.items():
         if v >= 3:
             loaded_pqm.node_map[k] = v + 1
+    loaded_pqm.node_map['t'] = 3
     assert loaded_pqm.heap_list[3] == ('t', 3)
     loaded_pqm.heapify_up(3)
     position = loaded_pqm.node_map['t']
     assert loaded_pqm.heap_list[position] == ('t', 3)
 
-def test_heapify_down_from_top():
-    pass
+def test_heapify_down_from_top(loaded_pqm_non_inf):
+    loaded_pqm_non_inf.heap_list.insert(0, ('t', 20))
+    for k,v in loaded_pqm_non_inf.node_map.items():
+        if v >= 0:
+            loaded_pqm_non_inf.node_map[k] = v + 1
+    loaded_pqm_non_inf.node_map['t'] = 0
+    assert loaded_pqm_non_inf.heap_list[0] == ('t', 20)
+    loaded_pqm_non_inf.heapify_down()
+    position = loaded_pqm_non_inf.node_map['t']
+    assert loaded_pqm_non_inf.heap_list[position] == ('t', 20)

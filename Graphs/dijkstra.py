@@ -18,7 +18,7 @@ class PriorityQueueMap:
         return self.heap_list[self.get_parent_index(index)][1]
 
     def has_left_child(self, index):
-        return get_left_child_index(index) < len(self.heap_list)
+        return self.get_left_child_index(index) < len(self.heap_list)
 
     def get_left_child_index(self, index):
         return (index * 2) + 1
@@ -27,7 +27,7 @@ class PriorityQueueMap:
         return self.heap_list[self.get_left_child_index(index)][1]
 
     def has_right_child(self, index):
-        return get_right_child_index < len(self.heap_list)
+        return self.get_right_child_index(index) < len(self.heap_list)
 
     def get_right_child_index(self, index):
         return (index * 2) + 2
@@ -53,16 +53,17 @@ class PriorityQueueMap:
             heapify_down(self.node_map[key])
 
     def get_smallest_child(self, index):
-        if has_right_child(index) and get_right_child(index) < get_left_child(index):
-            return get_right_child(index)
-        return get_left_child(index)
+        if self.has_right_child(index) and self.get_right_child(index) < self.get_left_child(index):
+            return self.get_right_child(index)
+        return self.get_left_child(index)
 
     def swap(self, index_a, index_b):
-        a = self.heap_list[index_a]
-        b = self.heap_list[index_b]
+        a = self.heap_list[index_a][0]
+        b = self.heap_list[index_b][0]
         self.heap_list[index_a], self.heap_list[index_b] = self.heap_list[index_b], self.heap_list[index_a]
         self.node_map[a] = index_b
         self.node_map[b] = index_a
+
 
     def poll(self):
         try:
@@ -83,7 +84,7 @@ class PriorityQueueMap:
 
     def heapify_down(self, index=0):
         while self.has_left_child(index):
-            smallest_child_index = get_smallest_child(index)
+            smallest_child_index = self.get_smallest_child(index)
             if self.heap_list[index] > self.heap_list[smallest_child_index]:
                 self.swap(index, get_smallest_child_index(index) )
             else:
