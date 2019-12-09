@@ -1,5 +1,5 @@
 import pytest
-from dijkstra import PriorityQueueMap
+from dijkstra import PriorityQueueMap, dijkstra
 
 @pytest.fixture(scope='function')
 def graph():
@@ -85,3 +85,15 @@ def test_heapify_down_from_top(loaded_pqm_non_inf):
     loaded_pqm_non_inf.heapify_down()
     position = loaded_pqm_non_inf.node_map['t']
     assert loaded_pqm_non_inf.heap_list[position] == ('t', 20)
+
+def test_poll(loaded_pqm_non_inf):
+    assert loaded_pqm_non_inf.poll() == ('a', 0)
+    assert loaded_pqm_non_inf.heap_list[3] == ('h', 13)
+
+def test_set_distance(loaded_pqm):
+    loaded_pqm.set_distance('w', 5)
+    assert loaded_pqm.heap_list[loaded_pqm.node_map['w']] == ('w', 5)
+
+def test_dijkstra(graph):
+    parent = dijkstra(graph, 'u')
+    assert parent == {'u': None, 'v': 'u', 'x': 'u', 'w': 'y', 'y': 'x', 'z': 'y'}

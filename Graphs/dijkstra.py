@@ -45,17 +45,20 @@ class PriorityQueueMap:
     def set_distance(self, key, value):
         # Modify the distance value in the min-heap. 
         # After modification, rebalance the heap
-        self.heap_list[self.node_map[key]][1] = value
+        self.heap_list[self.node_map[key]] = (key, value)
         # Check if value is larger than parent and heapify accordingly
         if self.has_parent(self.node_map[key]) and self.get_parent(self.node_map[key]) > value:
             self.heapify_up(self.node_map[key])
         else:
-            heapify_down(self.node_map[key])
+            self.heapify_down(self.node_map[key])
 
-    def get_smallest_child(self, index):
+    def get_path_distance(self, key):
+        return self.heap_list[self.node_map[key]][1]
+
+    def get_smallest_child_index(self, index):
         if self.has_right_child(index) and self.get_right_child(index) < self.get_left_child(index):
-            return self.get_right_child(index)
-        return self.get_left_child(index)
+            return self.get_right_child_index(index)
+        return self.get_left_child_index(index)
 
     def swap(self, index_a, index_b):
         a = self.heap_list[index_a][0]
@@ -64,15 +67,18 @@ class PriorityQueueMap:
         self.node_map[a] = index_b
         self.node_map[b] = index_a
 
-
-    def poll(self):
-        try:
+    def poll(self): 
+        if len(self.heap_list) > 1:      
             item = self.heap_list[0]
-            self.heap_list[0] = self.heap_list.pop()
-            self.heapify_down
-        except:
-            raise IndexError
-
+            self.node_map[item[0]] = None
+            tail = self.heap_list.pop()
+            self.heap_list[0] = tail
+            self.node_map[tail[0]] = 0
+            self.heapify_down()
+        else:
+            item = self.heap_list.pop()
+        return item
+        
     def heapify_up(self, index=None):
         if index == None:
             index = len(self.heap_list) - 1
@@ -84,16 +90,13 @@ class PriorityQueueMap:
 
     def heapify_down(self, index=0):
         while self.has_left_child(index):
-            smallest_child_index = self.get_smallest_child(index)
+            smallest_child_index = self.get_smallest_child_index(index)
             if self.heap_list[index] > self.heap_list[smallest_child_index]:
-                self.swap(index, get_smallest_child_index(index) )
+                self.swap(index, smallest_child_index)
+                index = smallest_child_index
             else:
                 break
 
-    
-
-
-    
 
 
 def dijkstra(graph, start):
@@ -107,17 +110,21 @@ def dijkstra(graph, start):
     while not pq.is_empty():
         # take the node with the minimum path distance from the priority queue
         current_node = pq.poll()
+        current_node_key = current_node[0]
+        current_node_dist = current_node[1]
         distance[current_node[0]] = current_node[1]
         # Explore the current nodes neighbors and compare the path distances from the
         # start node. Update if neccessary
-        for neighbor in graph[current_node]:
+        for neighbor in graph[current_node_key]:
             if neighbor not in distance:
                 # Calculate the new path distance from the starting node
                 # Through the current node to its neighbor
-                path_dist = distance[current_node[0]] + graph[current_node][neighbor]
-                if path_dist < pq.get_path_dist[neighbor]:
+                path_dist = distance[current_node_key] + graph[current_node_key][neighbor]
+                if path_dist < pq.get_path_distance(neighbor):
                     pq.set_distance(neighbor, path_dist)
-                    parent[neighbor] = current_node
+                    parent[neighbor] = current_node_key
+    
+    return parent
 
   
 if __name__ == '__main__':
